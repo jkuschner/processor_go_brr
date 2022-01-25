@@ -84,8 +84,18 @@
 16. cpy     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
 
 **4. Programmer's Model**
-- How should a programmer think about how your machine operates?
-  - Hopefully shouldn’t have to think of much beyond how to use the instructions provided
-  - Mix of accumulator & load-store
 
+Programmers who use our machine should keep the following in mind:
 
+- No assumptions should be made about register values at the start of any program. For example, if '0' is a desired default value then the programmer will have to manually load that value into all registers at the start.
+- Our ISA is implemented as a combination of the classic accumulator and load-store designs. While many of our instructions might seem familiar, their implementation may be different from what one might expect, so we highly recommend reading through our instructions to understand what operations are possible, what information is needed to carry them out, and any implicit decisions that might be made behind the scenes.
+  - An example of a tricky instruction is `lut`, which was specifically made to assist in single-bit error correction for our program 2. `lut` is meant to take in the result of comparing two strings of parity bits. It returns a string that contains at most one '1' that is then meant to be xor'ed with a corresponding string of data bits to flip an incorrect bit, if the result of the parity comparison indicated. Programmers who want to make use of this instruction need to understand how this it works in conjunction with others to produce the desired result.
+- Register 8 is an implicit destination register for many of our instructions; as such, important data generally shouldn't be kept in this register as it can easily be overwritten.
+- Registers 9-16 are hidden/dedicated registers that aren't meant to be accessed outside of very specific instructions -- the programmer shouldn't try to change the values of the registers outside of the provided instructions that already do so, or their ability to correctly execute loops, if/else statements, etc. could be compromised.
+
+An example of an assembly language instruction in our machine and its machine code translation:
+
+- Assembly:     mov #20
+- Machine code: 100010100
+
+(This would result in the number 20 being stored in register 8.)
