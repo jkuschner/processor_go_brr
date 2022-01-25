@@ -5,7 +5,7 @@
 
 **1. Introduction**
 - Name: Processor Go Brr
-- Reg-reg mainly, with accumulator-like functionality on some instructions
+- Our processor is, for the most part, a reg-reg machine. For some instructions, register 8 serves as an accumulator type register for the purpose of trimming down instruction length such that they all fit within the 9-bit limit.
 
 **2. Architectural Overview**
 ![arch_diagram](architecture_diagram.png)
@@ -30,10 +30,8 @@
    1. Bitwise or `dest_reg` w/ `other_reg` and store in `dest_reg`
    2. `dest_reg` can be any reg
    3. `other_reg` can be `r[4-7]`
-   4. TODO: Make sure all `or` instructions only use `r[4-7]` in program2
 6. bitwise xor              `xor [dest_reg]`
    1. Bitwise xor `dest_reg` and the reg number store in `r8` and store in `dest_reg`
-   2. TODO: change all xor instructions to mov + xor
 7. reduction xor            `rxr [dest_reg]`
 8. add immediate            `add [dest_reg] immi2`
    1. TODO: change all adds to have <3 as immi. Can use mov and shift to get bigger numbers
@@ -41,14 +39,11 @@
    2.  Always moves into `r8`
 10. jump if equal           `je  [1 or 2 or 3]`
     1.  jumps to the address stored into one of the 3 dedicated saved PC reg
-    2.  TODO: double check all jumps to make sure the are correct je/jne
 11. jump not equal          `jne [1 or 2 or 3]`
     1.  jumps to the address stored into one of the 3 dedicated saved PC reg
-    2.  TODO: double check all jumps to make sure the are correct je/jne
 12. store PC                `spc [1 or 2 or 3] offset`
     1.  if `offset == 0` stores current address into one of 3 dedicated saved PC reg
     2.  otherwise, check `r8` for the relative offset amount
-    3.  TODO: fix all offsets that are >0 to use `r8`
 13. Lookup Table            `lut [input_reg] [1 or 2]`
 14. Counter clear           `ctc [a | b | c | b_flag]`
 15. Counter increment       `cti [a | b | c | b_flag]`
