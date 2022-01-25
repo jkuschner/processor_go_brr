@@ -10,7 +10,8 @@ spc #1              // start of outer loop
 ctc b_flag          // clear b_flag reg
 ld  r5, [r1]        // load data_mem[i] into r5(LSW)
 mov r3, #159        //
-xor r3, r1          // compare i to 159
+mov #1              // r8 = 1 (other register for upcoming xor)
+xor r3              // compare i to 159
 spc #3, #4          // skip to line 18 on jump
 je  #3
 add r1, #1          // i = i+1
@@ -19,7 +20,8 @@ ld  r6, [r1]        // load data_mem[i+1] into r6(MSW)
 mov r3, #0          // set r3 to 0(j)
 spc #2, #0          // start of first inner loop
 sbs r4              // r4 = LSW[j:j+5]_000
-xor r4, r2          // compare r4 and pattern
+mov #2              // r8 = 2 (other register for upcoming xor)
+xor r4              // compare r4 and pattern
 spc #3, #5          // skip to line 27 on jump
 jne #3
 cti b_flag          // set b_flag to 1
@@ -27,7 +29,8 @@ cti a               // increment act
 cti c               // increment cct
 add r3, #1          // increment j
 mov r7, #4          
-xor r7, r3          // compare j to 4
+mov #3              // r8 = 3 (other register for upcoming xor)
+xor r7              // compare j to 4
 jne #2
 
 cbf                 // set zero flag based on b_flag
@@ -38,23 +41,27 @@ ctc b_flag          // clear b_flag
 
 mov r3, #0          // set r3 to 0(j)
 mov r7, #159
-xor r7, r1          // compare i to 159
+mov #1              // r8 = 1 (other reg for upcoming xor)
+xor r7              // compare i to 159
 spc #3, #9
 je  #3
 spc #2, #0          // start of second inner loop
 dbs r4              // r4 = LSW[j:] + MSW[:j+5]
-xor r4, r2          // compare r4 and pattern
+mov #2              // r8 = 2 (other reg for upcoming xor)
+xor r4              // compare r4 and pattern
 spc #3, #4
 jne #3
 cti c               // increment cct
 add r3, #1          // increment j
 mov r7, #4          // r7 = 4
-xor r7, r3          // compare j to 4
+mov #3              // r8 = 3 (other reg for upcoming xor)
+xor r7              // compare j to 4
 jne #2
 
 add r1, #1          // increment i
 mov r7, #160        // r7 = 160
-xor r7, r1          // compare 160 and i
+mov #1              // r8 = 1 (other reg for upcoming xor)
+xor r7              // compare 160 and i
 jne #1
 
 cts a
