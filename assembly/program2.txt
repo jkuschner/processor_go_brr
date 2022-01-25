@@ -1,4 +1,4 @@
-spc 1               // store addr of start of outer loop
+spc #1, #0          // store addr of start of outer loop
 mov r1, #64         // init r1 to 0 for loop counting
 ld  r2, [r1]        // load data_mem[i] into r2(LSW)
 add r1, #1          // set i to i+1
@@ -97,7 +97,7 @@ add r1, #-29        // set r1 to i+2
 mov r2, #94         // set comparison for i
 mov #1              // r8 = 1 (other reg for upcoming xor)
 xor r2              // compare i to 94
-je  #1
+jne #1
 
 
 
