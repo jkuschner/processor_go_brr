@@ -96,7 +96,8 @@ add  r1, #-29       // put i back to normal w/ an increment
 lsl  r2, r1, #0     // store i into r2
 lsl  r3, r3, #8     // clear r3
 add  r3, #30        // set r3 to 30
-xor  r2, r3         // set flag for loop cond.
+mov  #3             // r8 = 3 (other register for upcoming xor)
+xor  r2             // set flag for loop cond.
 je   #1
 
 
