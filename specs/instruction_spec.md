@@ -5,14 +5,12 @@
    1. Always stores into the the address at r1 from `dest_reg`.
 3. logical shift left       `lsl [dest_reg] [src_reg]`
    1. Shifts in 0's to destination
-   2. `dest_reg` can be any reg
-   3. `src_reg` can be (half)
+   2. `dest_reg` and `src_reg` can be any reg 1-8
    4. Shift amount is always grabbed from `r8`
    5. TODO: All shifts need to move shift amount into r8
 4. logical shift right      `lsr [dest_reg] [src_reg]`
    1. Shifts in 0's to destination
-   2. `dest_reg` can be any reg
-   3. `src_reg` can be (half)
+   2. `dest_reg` and `src_reg` can be any reg 1-8
    4. Shift amount is always grabbed from `r8`
    5. TODO: All shifts need to move shift amount into r8
 5. bitwise or               `or  [dest_reg] [other_reg]`
@@ -26,6 +24,8 @@
    1. TODO: change all adds to have <3 as immi. Can use mov and shift to get bigger numbers
 9.  move immediate           `mov immi5`
    2.  Always moves into `r8`
+   3.  TODO: Make sure all moves do not specify other registers. If they do use a cpy instruction after to fix
+   4.  TODO: Make sure all immi are <32.
 10. jump if equal           `je  [1 or 2 or 3]`
     1.  jumps to the address stored into one of the 3 dedicated saved PC reg
 11. jump not equal          `jne [1 or 2 or 3]`
@@ -45,27 +45,30 @@
 20. Copy reg                `cpy [dest_reg]`
     1.  Copies value of `r8` into `[dest_reg]`
 
-### Instruction Formats
-1. ld       `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-2. str      `[4'b opcode | 3'b reg encode]`                          -> 7 bits 
-3. lsl      `[4'b opcode | 3'b reg encode | 2'b reg encode]`         -> 9 bits 
-4. lsr      `[4'b opcode | 3'b reg encode | 2'b reg encode]`         -> 9 bits
-5. or       `[4'b opcode | 3'b reg encode | 2'b reg encode]`         -> 9 bits
-6. xor      `[4'b opcode | 3'b reg encode ]`                         -> 7 bits
-7. rxr      `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-8. add      `[4'b opcode | 3'b reg encode | immi2]`                  -> 9 bits
-9. mov      `[4'b opcode | immi5]`                                   -> 9 bits
-10. je      `[4'b opcode | 3'b choice]`                              -> 7 bits
-10. jne     `[4'b opcode | 3'b choice]`                              -> 7 bits
-11. spc     `[4'b opcode | 2'b reg choice | offset1]`                -> 7 bits
-12. lut     `[4'b opcode | 3'b reg encode | 1'b choice]`             -> 8 bits
-13. ctc     `[4'b opcode | 2'b ctr op | 2'b reg choice]`             -> 8 bits
-13. cti     `[4'b opcode | 2'b ctr op | 2'b reg choice]`             -> 8 bits
-13. cts     `[4'b opcode | 2'b ctr op | 2'b reg choice]`             -> 8 bits
-13. cbf     `[4'b opcode | 2'b ctr op]`                              -> 6 bits
-14. sbs     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-15. dbs     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-16. cpy     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
+### Instruction OpCodes and Format
+1. ld       `[5'b 01000 | 3'b reg encode | 1'b unused]`
+2. str      `[5'b 01001 | 3'b reg encode | 1'b unused]`
+3. lsl      `[3'b 000 | 3'b reg encode | 3'b reg encode]`
+4. lsr      `[3'b 001 | 3'b reg encode | 3'b reg encode]`
+5. or       `[4'b 1101 | 3'b reg encode | 2'b reg encode]`
+6. xor      `[4'b 0110 | 3'b reg encode | 2'b unused]`
+7. rxr      `[4'b 0111 | 3'b reg encode | 2'b unused]`
+8. add      `[4'b 1110 | 3'b reg encode | immi2]`
+9. mov      `[4'b 1111 | immi5]`
+10. je      `[5'b 10000 | 3'b choice | 1'b unused]`
+10. jne     `[5'b 10001 | 3'b choice | 1'b unused]`
+11. spc     `[4'b 1001 | 2'b reg choice | offset1 | 2'b unused]`
+12. lut     `[4'b 1010 | 3'b reg encode | 1'b choice | 1'b unused]`
+13. ctc     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`
+13. cti     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`
+13. cts     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`
+13. cbf     `[4'b 1011 | 2'b ctr op | 3'b unused]`
+14. sbs     `[5'b 01010 | 3'b reg encode | 1'b unused]`
+15. dbs     `[5'b 01011 | 3'b reg encode | 1'b unused]`
+16. cpy     `[4'b 1100 | 3'b reg encode | 2'b unused]`
+
+
+
 
 **THINGS TO KEEP TRACK OF:**
 - r1 is always a loop counter + what we use to address memory
