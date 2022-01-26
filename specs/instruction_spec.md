@@ -8,11 +8,13 @@
    2. `dest_reg` can be any reg
    3. `src_reg` can be (half)
    4. Shift amount is always grabbed from `r8`
-4. logical shift right      `lsr [dest_reg] [src_reg] shamt`
+   5. TODO: All shifts need to move shift amount into r8
+4. logical shift right      `lsr [dest_reg] [src_reg]`
    1. Shifts in 0's to destination
    2. `dest_reg` can be any reg
    3. `src_reg` can be (half)
    4. Shift amount is always grabbed from `r8`
+   5. TODO: All shifts need to move shift amount into r8
 5. bitwise or               `or  [dest_reg] [other_reg]`
    1. Bitwise or `dest_reg` w/ `other_reg` and store in `dest_reg`
    2. `dest_reg` can be any reg
