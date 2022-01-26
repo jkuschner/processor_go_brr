@@ -87,12 +87,12 @@
    - If the offset != 0, use r8's stored value for the offset amount
 
 ### Addressing
-| Mode              | Example     |
-| -------------             | -------------     |
-| Immediate mode         | `mov #1`     |
-| Implied addressing mode      | `cbf`          |
-| Indirect addressing mode      | `str r2, [r1]`    |
-| Register addressing mode      | `xor r4, r1`    |
+| Mode                          | Address Calculation | Example     |
+| -------------                 |------------- | -------------     |
+| Immediate mode                | N/A | `mov  #1`     |
+| Implied addressing mode       | Effective address is implied in opcode | `cbf`  |
+| Indirect addressing mode        | Effective address contained in base register | `str r2, [r1]`    |
+| Register direct addressing mode      | N/A | `xor r4, r1`    |
 
 **4. Programmer's Model**
 
@@ -110,3 +110,436 @@ An example of an assembly language instruction in our machine and its machine co
 - Machine code: 111110100
 
 (This would result in the number 20 being stored in register 8.)
+
+### Program 1
+```
+spc #1, #0         // save PC to PCreg1
+mov #0             // move 0 into r8 (to copy into r1)
+cpy r1             // set r1(i) to 0
+ld  r2, [r1]       // load LSW from data_mem[i]
+mov #1             // mov 1 into r8 (for upcoming add)
+add r1, 0          // add 1 to i
+ld  r3, [r1]       // load MSW from data_mem[i+1]
+mov #4             // move 4 into r8 (for use in upcoming lsr)
+lsr r4, r2         // right shift LSW into tLSW
+mov #4             // move 4 into r8 (for use in upcoming lsl)
+lsl r5, r3         // left shift MSW into tMSW
+or  r5, r4         // store tLSW in tmp
+rxr r5             // store p8 in r5
+mov #4             // move 4 into r8 (for use in upcoming lsl)
+lsl r5, r5         // put p8 in correct position
+or  r6, r5         // store p8 in parity reg
+
+mov #4             // move 4 into r8 (for use in upcoming lsl)
+lsl r5, r3         // left shift MSW into tMSW
+mov #7             // move 7 into r8 (for use in upcoming lsr)
+lsr r4, r2         // right shift LSW into tLSW
+mov #3             // move 3 into r8 (for use in upcoming lsl)
+lsl r4, r4         // reposition b8
+or  r5, r4         // put b11:b8 into tMSW
+mov #4             // move 4 into r8 (for use in upcoming lsl)
+lsl r4, r2         // left shift LSW into tLSW
+mov #5             // move 5 into r8 (for use in upcoming lsr)
+lsr r4, r4         // reposition b4:b2
+or  r5, r4         // puts 0_b11:b8_b4_b3_b2 into tRSW
+rxr r5             // store p4 in r5
+mov #3             // move 3 into r8 (for use in upcoming lsl)
+lsl r5, r5         // put p4 in correct position
+or  r6, r5         // store p4 in parity reg
+
+mov #1             // move 1 into r8 (for use in upcoming lsr)
+lsr r5, r3         //tMSW = 0000_00_b11:b10
+mov #5             // move 5 into r8 (for use in upcoming lsl)
+lsl r5, r5         //tMSW = 0_b11:b10_0_0000
+mov #1             // move 1 into r8 (for use in upcoming lsl)
+lsl r4, r2         //tLSW = b7:b6_XX_XXX0
+mov #6             // move 6 into r8 (for use in upcoming lsr)
+lsr r4, r4         //tLSW = 0000_00_b7:b6
+mov #3             // move 3 into r8 (for use in upcoming lsl)
+lsl r4, r4         //tLSW = 000_b7:b6_000
+or  r5, r4         //tMSW = 0_b11:b10_b7:b6_000
+mov #2             // move 2 into r8 (for use in upcoming lsr)
+lsr r4, r2         //tLSW = 00XX_00_b4:b3
+mov #6             // move 6 into r8 (for use in upcoming lsl)
+lsl r4, r4         //tLSW = b4:b3_00_0000
+mov #5             // move 5 into r8 (for use in upcoming lsr)
+lsr r4, r4         //tLSW = 0000_0_b4:b3_0
+or  r5, r4         //tMSW = 0_b11:b10_b7:b6_b4:b3_0
+mov #7             // move 7 into r8 (for use in upcoming lsr)
+lsr r4, r2         //tLSW = b1_000_0000
+mov #7             // move 7 into r8 (for use in upcoming lsr)
+lsr r4, r4         //tLSW = 0000_000b1
+or  r5, r4         //tMSW = 0_b11:b10_b7:b6_b4:b3_b1
+rxr r5             //store p2 in r5
+mov #2             // move 2 into r8 (for use in upcoming lsl)
+lsl r5, r5         //put p2 in correct position
+or  r6, r5         //store p2 in parity reg
+
+mov #2             // move 2 into r8 (for use in upcoming lsr)
+lsr r5, r3         //tMSW = 0000_000b11
+mov #6             // move 6 into r8 (for use in upcoming lsl)
+lsl r5, r5         //tMSW = 0b11_00_0000
+mov #7             // move 7 into r8 (for use in upcoming lsl)
+lsl r4, r3         //r4 = b9_000_0000
+mov #2             // move 2 into r8 (for use in upcoming lsr)
+lsr r4, r4         //r4 = 00_b9_0_0000
+or  r5, r4         //r5 = 0_b11_b9_0_0000
+mov #6             // move 6 into r8 (for use in upcoming lsr)
+lsr r4, r2         //r4 = 0000_00Xb7
+mov #7             // move 7 into r8 (for use in upcoming lsl)
+lsl r4, r4         //r4 = b7_000_0000
+mov #3             // move 3 into r8 (for use in upcoming lsr)
+lsr r4, r4         //r4 = 000_b7_0000
+or  r5, r4         //r5 = 0_b11_b9_b7_0000
+mov #3             // move 3 into r8 (for use in upcoming lsr)
+lsr r4, r2         //r4 = 000X_XXb5:b4
+mov #6             // move 6 into r8 (for use in upcoming lsl)
+lsl r4, r4         //r4 = b5:b4_00_0000
+mov #4             // move 4 into r8 (for use in upcoming lsr)
+lsr r4, r4, #4     //r4 = 0000_b5:b4_00
+or  r5, r4         //r5 = 0_b11_b9_b7_b5_b4_00
+mov #6             // move 6 into r8 (for use in upcoming lsl)
+lsl r4, r2         //r4 = b2:b1_00_0000
+mov #6             // move 6 into r8 (for use in upcoming lsr)
+lsr r4, r4         //r4 = 0000_00b2:b1
+or  r5, r4         //r5 = 0_b11_b9_b7_b5_b4_b2_b1
+rxr r5             //save p1 in r5
+mov #1             // move 1 into r8 (for use in upcoming lsr)
+lsl r5, r5         //put p1 in correct position
+or  r6, r5         // store p1 in parity reg
+
+mov #0             // move 0 into r8 (for use in upcoming lsl)
+lsl r4, r2         // copy LSW into r4
+rxr r4             // rxr LSW
+mov #0             // move 0 into r8 (for use in upcoming lsl)
+lsl r5, r3         // copy MSW into r5
+rxr r5             // rxr MSW
+mov #7             // move 7 into r8 (for use in upcoming lsl)
+lsl r5, r5         // make room for parity
+or  r5, r6         // copy parities into r5
+rxr r5             // rxr MSW+parities
+mov #1             // move 1 into r8 (for use in upcoming lsl)
+lsl r5, r5         // make room for rxr LSW
+or  r5, r4         // copy rxr LSW into r5
+rxr r5             // put p16 into r5
+or  r6, r5         // store p16 in parity reg
+
+mov #5             // move 5 into r8 (for use in upcoming lsl)
+lsl r5, r3         // r5 = b11:b9_0_0000
+mov #4             // move 4 into r8 (for use in upcoming lsr)
+lsr r4, r2         // r4 = 0000_b8:b5
+mov #1             // move 1 into r8 (for use in upcoming lsl)
+lsl r4, r4         // r4 = 000_b8:b5_0
+or  r5, r4         // r5 = b11:b5:0
+mov #4             // move 4 into r8 (for use in upcoming lsr)
+lsr r4, r6         // r4 = 0000_000p8
+or  r5, r4         // r5 = b11:b5_p8
+mov #29            // mov 29 into r8 (for upcoming add)
+add r1, 0          //  set i to correct addr(i+30)
+str r5, [r1]       // store r5 into data_mem[i+30]
+mov #1             // move 1 into r8 (for use in upcoming lsr)
+lsr r4, r2         // r4 = 0000_0b4:b2
+mov #5             // move 5 into r8 (for use in upcoming lsl)
+lsl r4, r4         // r4 = b4:b2_0_0000
+mov #4             // move 4 into r8 (for use in upcoming lsl)
+lsl r5, r6         // r5 = p4_XXX_0000
+mov #7             // move 7 into r8 (for use in upcoming lsr)
+lsr r5, r5         // r5 = 0000_000p4
+mov #4             // move 4 into r8 (for use in upcoming lsl)
+lsl r5, r5         // r5 = 000_p4_0000
+or  r4, r5         // r4 = b4:b2_p4_0000
+mov #7             // move 7 into r8 (for use in upcoming lsl)
+lsl r5, r2         // r5 = b1_000_0000
+mov #4             // move 4 into r8 (for use in upcoming lsr)
+lsr r5, r5         // r5 = 0000_b1_000
+or  r4, r5         // r4 = b4:b2_p4_b1_000 
+mov #5             // move 5 into r8 (for use in upcoming lsl)
+lsl r5, r6         // r5 = p2_p1_p16_0_0000
+mov #5             // move 5 into r8 (for use in upcoming lsr)
+lsr r5, r5         // r5 = 0000_0_p2_p1_p16
+or  r4, r5         // r4 = b4:b2_p4_b1_p2_p1_p16
+mov #1             // mov 1 into r8 (for upcoming add)
+add r1, 0          // set i to i + 31
+str r4, [r1]       // store r4 into data_mem[i+31]
+mov #29            // mov 29 into r8 (for upcoming add)
+add r1, 1          // put i back to normal w/ an increment
+mov #0             // move 0 into r8 (for use in upcoming lsl)
+lsl r2, r1         // store i into r2
+mov #8             // move 8 into r8 (for use in upcoming lsr)
+lsl r3, r3         // clear r3
+mov #30            // mov 30 into r8 (for upcoming add)
+add r3, 0          // set r3 to 30
+mov #3             // r8 = 3 (other register for upcoming xor)
+xor r2             // set flag for loop cond.
+jne #1
+```
+### Program 2
+```
+spc #1, #0          // store addr of start of outer loop
+mov #2              // r8 = 2
+cpy r1              // r1 = 2
+mov #5              // r8 = 5
+lsl r1, r1          // r1 = 2 * 2^5 = 64 (for loop counting)
+ld  r2, [r1]        // load data_mem[i] into r2(LSW)
+mov #1              // mov 1 into r8 (for upcoming add)
+add r1, #0           // set i to i+1
+ld  r3, [r1]        // load data_mem[i+1] into r3(MSW)
+mov #5
+lsl r6, r2          // r6 = p2_p1_p16_0_0000
+mov #6
+lsr r6, r6          // r6 = 0000_00_p2_p1
+mov #3
+lsl r4, r2, #3      // r4 = p4_b1_p2_p1_p16_000
+mov #7
+lsr r4, r4          // r4 = 0000_000p4
+mov #2
+lsl r4, r4          // r4 = 0000_0_p4_00
+or  r6, r4          // store p4 into r6(parity reg)
+mov #7
+lsl r4, r3          // r4 = p8_000_0000
+mov #4
+lsr r4, r4          // r4 = 0000_p8_000
+or  r6, r4          // store p8 into r6(parity reg)
+
+mov #4
+lsl r4, r2          // r4 = b1_p2_p1_p16_0000
+mov #7
+lsr r4, r4          // r4 = 0000_000_b1
+mov #5
+lsr r5, r2          // r5 = 0000_0_b4:b2
+mov #1
+lsl r5, r5          // r5 = 0000_b4:b2_0_0000
+or  r4, r5          // r4 = 0000_b4:b1
+mov #1
+lsr r5, r3          // r5 = 0_b11:b5
+mov #4
+lsl r5, r5          // r5 = b8:b5_0000
+or  r4, r5          // r4 = b8:b1
+mov #5
+lsr r5, r3          // r5 = 00000_b11:b9
+
+mov #0
+lsl r3, r5          // r3 = 00000_b11:b9 (MSW)
+mov #0
+lsl r2, r4          // r2 - b8:b1 (LSW)
+
+mov #4
+lsr r4, r2          // r4 = 0000_b8:b5
+mov #4
+lsl r5, r3          // r5 = 0_b11:b9_0000
+or  r5, r4          // r5 = 0_b11:b5
+rxr r5              // store p8 in r5
+mov #3
+lsr r5, r5          // 0000_p8_000
+mov #0
+cpy r7              // 0 out r7(nParity)
+or  r7, r5          // store p8 in nParity reg
+
+mov #4
+lsl r4, r3          // r4 = 0_b11:b9_0000
+mov #7
+lsr r5, r2          // r5 = 0000_000_b8
+mov #3
+lsl r5, r5          // r5 = 0000_b8_000
+or  r4, r5          // r4 = 0_b11:b8_000
+mov #4
+lsr r5, r2          // r5 = b4:b1_0000
+mov #5
+lsl r5, r5          // r5 = 0000_0_b4:b2
+or  r4, r5          // r4 = 0_b11:b8_b4:b2
+rxr r4              // r4 = 0000_000_p4
+mov #2
+lsr r4, r4          // r4 = 0000_0_p4_00
+or  r7, r4          // r7 = 0000_p8_p4_00
+
+mov #2
+lsr r4, r3          // r4 = 0000_00_b11:b10
+mov #5
+lsl r4, r4          // r4 = 0_b11:b10_0_0000
+mov #1
+lsl r5, r2          // r5 = b7:b6_XX_XXX0
+mov #6
+lsr r5, r5          // r5 = 0000_00_b7:b6
+mov #3
+lsl r5, r5          // r5 = 000_b7_b6_000
+or  r4, r5          // r4 = 0_b11:b10_b7_b6_000
+mov #4
+lsl r5, r2          // r5 = b4:b3_XX_0000
+mov #6
+lsr r5, r5          // r5 = 0000_00_b4:b3
+mov #1
+lsl r5, r5          // r5 = 0000_0_b4:b3_0
+or  r4, r5          // r4 = 0_b11:b10_b7_b6_b4:b3_0
+mov #7
+lsl r5, r2          // r5 = b1_000_0000
+mov #7
+lsr r5, r5          // r5 = 0000_000_b1
+or  r4, r5          // r4 = 0_b11:b10_b7_b6_b4:b3_b1
+rxr r4              // r4 = 0000_000_p2
+mov #1
+lsr r4, r4          // r4 = 0000_00_p2_0
+or  r7, r4          // r7 = 0000_p8_p4_p2_0
+
+mov #2
+lsr r4, r3          // r4 = 0000_000_b11
+mov #6
+lsl r4, r4          // r4 = 0_b11_00_0000
+mov #7
+lsl r5, r3          // r5 = b9_000_0000
+mov #2
+lsr r5, r5          // r5 = 00_b9_0_0000
+or  r4, r5          // r4 = 0_b11_b9_0_0000
+mov #1
+lsl r5, r2          // r5 = b7_XXX_XXX0
+mov #7
+lsr r5, r5          // r5 = 0000_000_b7
+mov #4
+lsl r5, r5          // r5 = 000_b7_0000
+or  r4, r5          // r4 = 0_b11_b9_b7_0000
+mov #3
+lsl r5, r2          // r5 = b5:b4_XX_X000
+mov #6
+lsr r5, r5          // r5 = 0000_00_b5:b4
+mov #2
+lsl r5, r5          // r5 = 0000_b5:b4_00
+or  r4, r5          // r4 = 0_b11_b9_b7_b5:b4_00
+mov #6
+lsl r5, r2          // r5 = b2:b1_00_0000
+mov #6
+lsr r5, r5          // r5 = 0000_00_b2:b1
+or  r4, r5          // r4 = 0_b11_b9_b7_b5:b4_b2:b1
+rxr r4              // r4 = 0000_000_p1
+or  r7, r4          // r7 = 0000_p8_p4_p2_p1
+
+mov #7              // r8 = 7 (other reg for upcoming xor)
+xor r6              // r6 = flipped parities
+lut r6, r4, #1      // r4 = bits to flip in MSW
+lut r6, r5, #0      // r5 = bits to flip in LSW
+mov #4              // r8 = 4 (other reg for upcoming xor)
+xor r3              // r3 = possibly corrected MSW
+mov #5              // r8 = 5 (other reg for upcoming xor)
+xor r2              // r2 = possibly corrected LSW
+mov #29             // r8 = 29
+add r1, #0          // set r1 to i+30
+str r2, [r1]        // store corrected LSW into data_mem[i+30]
+mov #1              // r8 = 1
+add r1, #0          // set r1 to i+31
+str r3, [r1]        // store corrected MSW into data_mem[i+31]
+mov #29             // r8 = 29
+add r1, #1          // set r1 to i+2
+mov #1              // r8 = 1
+cpy r2              // r2 = 1
+mov #6              // r8 = 6
+lsl r2, r2          // r2 = 1 * 2^6 = 64 
+mov #30             // r8 = 30
+add r2, #0          // r2 = 64 + 30 = 94 (to set comparison for i)
+mov #1              // r8 = 1 (other reg for upcoming xor)
+xor r2              // compare i to 94
+jne #1
+```
+### Program 3
+```
+mov #20
+cpy r1              // set r1 to 20
+mov #3
+lsl r1, r1          // multipy r1 by 8, r1 = 160
+ld  r2, [r1]        // load data_mem[160] into r2(pattern)
+ctc a               // clear act reg
+ctc b               // clear bct reg
+ctc c               // clear cct reg
+
+mov #16
+cpy r1
+mov #3
+lsl r1, r1          // set r1 to 128(i)
+spc #1, #0          // start of outer loop
+ctc b_flag          // clear b_flag reg
+ld  r5, [r1]        // load data_mem[i] into r5(LSW)
+
+mov #19
+cpy r3
+mov #3
+lsl r3, r3
+mov #7              // mov 7 into r8 (for upcoming add)
+add r3, 0           // r3 = 159
+mov #1              // r8 = 1 (other register for upcoming xor)
+xor r3              // compare i to 159
+mov #4              // r8 = 4
+spc #3, #1          // skip to line 21 on jump(mov r3, #0)
+je  #3
+
+mov #1             // mov 1 into r8 (for upcoming add)
+add r1, #0          // i = i+1
+ld  r6, [r1]        // load data_mem[i+1] into r6(MSW)
+
+mov #0
+cpy r3              // set r3 to 0(j)
+spc #2, #0          // start of first inner loop
+sbs r4              // r4 = LSW[j:j+5]_000
+mov #2              // r8 = 2 (other register for upcoming xor)
+xor r4              // compare r4 and pattern
+mov #5              // r8 = 5 (jump distance)
+spc #3, #1          // skip to line 31 on jump(add r3, #1)
+jne #3
+cti b_flag          // set b_flag to 1
+cti a               // increment act
+cti c               // increment cct
+mov #1
+add r3, #0          // increment j
+mov #4
+cpy r7        
+mov #3              // r8 = 3 (other register for upcoming xor)
+xor r7              // compare j to 4
+jne #2
+
+cbf                 // set zero flag based on b_flag
+mov #4              // r8 = 4 (jump distance)
+spc #3, #1          // skip to line 43 on jump(mov r3, #0)
+je  #3
+cti b               // increment bct
+ctc b_flag          // clear b_flag
+
+mov #0
+cpy r3              // set r3 to 0(j)
+
+mov #19
+cpy r7
+mov #3
+lsl r7, r7
+mov #7
+add r7, #0          // r7 = 159
+mov #1              // r8 = 1 (other reg for upcoming xor)
+xor r7              // compare i to 159
+mov #10             // r8 = 10 (jump distance)
+spc #3, #1          // skip to (add r3, #1)
+je  #3
+spc #2, #0          // start of second inner loop
+dbs r4              // r4 = LSW[j:] + MSW[:j+5]
+mov #2              // r8 = 2 (other reg for upcoming xor)
+xor r4              // compare r4 and pattern
+mov #3              // r8 = 3 (jump distance)
+spc #3, #1          // skip to (add r3, #1)
+jne #3
+cti c               // increment cct
+mov #1
+add r3, #0          // increment j
+mov #4
+cpy r7              // r7 = 4
+mov #3              // r8 = 3 (other reg for upcoming xor)
+xor r7              // compare j to 4
+jne #2
+
+mov #1
+add r1, #0          // increment i
+mov #20
+cpy r7              // set r7 to 20
+mov #3
+lsl r7, r7          // r7 = 160
+mov #1              // r8 = 1 (other reg for upcoming xor)
+xor r7              // compare 160 and i
+jne #1
+
+cts a
+cts b
+cts c
+```
