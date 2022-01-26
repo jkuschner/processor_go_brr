@@ -78,6 +78,54 @@
 15. dbs     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
 16. cpy     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
 
+### Opcodes
+ld     0000  
+str    0001  
+lsl    0010  
+lsr    0011  
+or     0100  
+xor    0101  
+rxr    0110  
+add    0111  
+mov    1000  
+ je    1001  
+jne    1001  
+spc    1010  
+lut    1011  
+ctc    1100  
+cti    1100  
+cts    1100  
+cbf    1100  
+sbs    1101  
+dbs    1110  
+cpy    1111  
+
+**ctr_op**  
+ctc    00  
+cti    01  
+cts    10  
+cbf    11  
+
+### Internal Operands
+16 registers are supported:
+- 8 for general purpose
+- 8 for dedicated usage (e.g. program counters)
+
+### Branches
+- Two jump instructions, for equal and unequal comparison, are supported.
+- As noted in the instruction syntax, these are designed to jump specifically to the address stored in one of the dedicated PC registers. 
+- Such addresses can be calculated by calling spc and storing the current in a selected PC register if the offset field is set to 0
+   - If the offset != 0, use r8's stored value for the offset amount 
+
+### Addressing
+| Mode  | Example |
+| ------------- | ------------- |
+| Immediate mode | add r2, #1 |
+| Implied addressing mode  | cbf  |
+| Indirect addressing mode   |   ld r2, [r1] |
+| Register addressing mode      | xor r4, r1|
+
+
 **4. Programmer's Model**
 
 Programmers who use our machine should keep the following in mind:
