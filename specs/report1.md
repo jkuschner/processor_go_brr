@@ -11,20 +11,18 @@
 ![arch_diagram](architecture_diagram.png)
 
 **3. Machine spec**
-### Instruction Syntax:
+### Instruction Format:
 1. load                     `ld  [dest_reg]`
    1. Always loads from the address at r1 into `dest_reg`.
 2. store                    `str [source_reg] [dest_addr]`
    1. Always stores into the the address at r1 from `dest_reg`.
 3. logical shift left       `lsl [dest_reg] [src_reg]`
    1. Shifts in 0's to destination
-   2. `dest_reg` can be any reg
-   3. `src_reg` can be (half)
+   2. `dest_reg` and `src_reg` can be any reg 1-8
    4. Shift amount is always grabbed from `r8`
 4. logical shift right      `lsr [dest_reg] [src_reg] shamt`
    1. Shifts in 0's to destination
-   2. `dest_reg` can be any reg
-   3. `src_reg` can be (half)
+   2. `dest_reg` and `src_reg` can be any reg 1-8
    4. Shift amount is always grabbed from `r8`
 5. bitwise or               `or  [dest_reg] [other_reg]`
    1. Bitwise or `dest_reg` w/ `other_reg` and store in `dest_reg`
@@ -33,8 +31,9 @@
 6. bitwise xor              `xor [dest_reg]`
    1. Bitwise xor `dest_reg` and the reg number store in `r8` and store in `dest_reg`
 7. reduction xor            `rxr [dest_reg]`
-8. add immediate            `add [dest_reg] immi2`
-   1. TODO: change all adds to have <3 as immi. Can use mov and shift to get bigger numbers
+8. add                      `add [dest_reg] [0 or 1]`
+   1. use 0 to indicate regular addition or 1 for subtraction (adding a negative)
+   2. adds the number in register 8 with the value in `dest_reg` and stores the result in `dest_reg`
 9.  move immediate           `mov immi5`
    2.  Always moves into `r8`
 10. jump if equal           `je  [1 or 2 or 3]`
@@ -56,75 +55,44 @@
 20. Copy reg                `cpy [dest_reg]`
     1.  Copies value of `r8` into `[dest_reg]`
 
-### Instruction Formats
-1. ld       `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-2. str      `[4'b opcode | 3'b reg encode]`                          -> 7 bits 
-3. lsl      `[4'b opcode | 3'b reg encode | 2'b reg encode]`         -> 9 bits 
-4. lsr      `[4'b opcode | 3'b reg encode | 2'b reg encode]`         -> 9 bits
-5. or       `[4'b opcode | 3'b reg encode | 2'b reg encode]`         -> 9 bits
-6. xor      `[4'b opcode | 3'b reg encode ]`                         -> 7 bits
-7. rxr      `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-8. add      `[4'b opcode | 3'b reg encode | immi2]`                  -> 9 bits
-9. mov      `[4'b opcode | immi5]`                                   -> 9 bits
-10. je      `[4'b opcode | 3'b choice]`                              -> 7 bits
-10. jne     `[4'b opcode | 3'b choice]`                              -> 7 bits
-11. spc     `[4'b opcode | 2'b reg choice | offset1]`                -> 7 bits
-12. lut     `[4'b opcode | 3'b reg encode | 1'b choice]`             -> 8 bits
-13. ctc     `[4'b opcode | 2'b ctr op | 2'b reg choice]`             -> 8 bits
-13. cti     `[4'b opcode | 2'b ctr op | 2'b reg choice]`             -> 8 bits
-13. cts     `[4'b opcode | 2'b ctr op | 2'b reg choice]`             -> 8 bits
-13. cbf     `[4'b opcode | 2'b ctr op]`                              -> 6 bits
-14. sbs     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-15. dbs     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-16. cpy     `[4'b opcode | 3'b reg encode]`                          -> 7 bits
-
-### Opcodes
-ld     0000  
-str    0001  
-lsl    0010  
-lsr    0011  
-or     0100  
-xor    0101  
-rxr    0110  
-add    0111  
-mov    1000  
- je    1001  
-jne    1001  
-spc    1010  
-lut    1011  
-ctc    1100  
-cti    1100  
-cts    1100  
-cbf    1100  
-sbs    1101  
-dbs    1110  
-cpy    1111  
-
-**ctr_op**  
-ctc    00  
-cti    01  
-cts    10  
-cbf    11  
+### Instruction OpCodes and Format
+1. ld       `[5'b 01000 | 3'b reg encode | 1'b unused]`
+2. str      `[5'b 01001 | 3'b reg encode | 1'b unused]`
+3. lsl      `[3'b 000 | 3'b reg encode | 3'b reg encode]`
+4. lsr      `[3'b 001 | 3'b reg encode | 3'b reg encode]`
+5. or       `[4'b 1101 | 3'b reg encode | 2'b reg encode]`
+6. xor      `[4'b 0110 | 3'b reg encode | 2'b unused]`
+7. rxr      `[4'b 0111 | 3'b reg encode | 2'b unused]`
+8. add      `[4'b 1110 | 3'b reg encode | 1'b choice| 1'b unused]`
+9. mov      `[4'b 1111 | immi5]`
+10. je      `[5'b 10000 | 3'b choice | 1'b unused]`
+10. jne     `[5'b 10001 | 3'b choice | 1'b unused]`
+11. spc     `[4'b 1001 | 2'b reg choice | offset1 | 2'b unused]`
+12. lut     `[4'b 1010 | 3'b reg encode | 1'b choice | 1'b unused]`
+13. ctc     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`
+13. cti     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`
+13. cts     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`
+13. cbf     `[4'b 1011 | 2'b ctr op | 3'b unused]`
+14. sbs     `[5'b 01010 | 3'b reg encode | 1'b unused]`
+15. dbs     `[5'b 01011 | 3'b reg encode | 1'b unused]`
+16. cpy     `[4'b 1100 | 3'b reg encode | 2'b unused]`
 
 ### Internal Operands
-16 registers are supported:
-- 8 for general purpose
-- 8 for dedicated usage (e.g. program counters)
+- 16 registers are supported: 8 are for general purpose, 8 for dedicated usage (e.g. program counters)
 
 ### Branches
 - Two jump instructions, for equal and unequal comparison, are supported.
-- As noted in the instruction syntax, these are designed to jump specifically to the address stored in one of the dedicated PC registers. 
+- As noted in the instruction syntax, these are designed to jump specifically to the address stored in one of the dedicated PC registers.
 - Such addresses can be calculated by calling spc and storing the current in a selected PC register if the offset field is set to 0
-   - If the offset != 0, use r8's stored value for the offset amount 
+   - If the offset != 0, use r8's stored value for the offset amount
 
 ### Addressing
-| Mode  | Example |
-| ------------- | ------------- |
-| Immediate mode | add r2, #1 |
-| Implied addressing mode  | cbf  |
-| Indirect addressing mode   |   ld r2, [r1] |
-| Register addressing mode      | xor r4, r1|
-
+| Mode              | Example     |
+| -------------             | -------------     |
+| Immediate mode         | `mov #1`     |
+| Implied addressing mode      | `cbf`          |
+| Indirect addressing mode      | `str r2, [r1]`    |
+| Register addressing mode      | `xor r4, r1`    |
 
 **4. Programmer's Model**
 
