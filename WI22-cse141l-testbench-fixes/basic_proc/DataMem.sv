@@ -3,6 +3,14 @@
 // Module Name:    DataMem
 // single address pointer for both read and write
 // CSE141L
+
+/*
+Input: WriteEn(from decoder)
+       DataAddress(from reg_file, always r1)
+       DataIn(from reg_file)
+
+Output: DataOut(to reg_file)
+*/
 module DataMem #(parameter W=8, A=8)  (
   input                 Clk,
                         Reset,

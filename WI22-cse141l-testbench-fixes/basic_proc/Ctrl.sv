@@ -3,8 +3,22 @@ import definitions::*;
 // control decoder (combinational, not clocked)
 // inputs from instrROM, ALU flags
 // outputs to program_counter (fetch unit)
+
+/*
+Output:
+MemWrEn(to data_memory): set for store instructions(str and cts)
+RegWrEn(to reg_file): set for all instructions that write to a register
+ReadRegAddress(to reg_file): tell the reg_file which register it needs to read from
+WriteRegAddress(to reg_file): tell the reg_file which register it needs to write to
+JumpEqual(to program counter): set if its a je instruction
+JumpNotEqual(to program counter): set if its a jne instruction
+WriteSource(to top_level): will ultimately tell the reg_file where the the input is coming from(LUT, data_memory, or ALU).
+ALUOp(to ALU): Tells the ALU which op it is doing on its input data.
+
+
+*/
 module Ctrl (
-  input[ 8:0] Instruction,	   // machine code
+  input[ 8:0] Instruction,	   // machine code (comes from the Instruction ROM)
   output logic Jump     ,
                BranchEn ,
 	       RegWrEn  ,	   // write to reg_file (common)

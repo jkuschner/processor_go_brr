@@ -5,6 +5,11 @@
 //   packages very useful for declaring global variables
 package definitions;
     
+/*
+    Replace AND with OR
+    Add an RXR ALU operation.
+
+*/
 // Instruction map
     const logic [2:0]kADD  = 3'b000;
     const logic [2:0]kLSH  = 3'b001;

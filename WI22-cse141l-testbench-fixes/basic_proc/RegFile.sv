@@ -7,6 +7,15 @@
 /* parameters are compile time directives 
        this can be an any-width, any-depth reg_file: just override the params!
 */
+
+/*
+Inputs: RaddrA/RaddrB/Waddr(from decoder)
+        WriteEn(from decoder)
+        DataIn(from ALU, from data_memory, from LUT)
+
+Outputs: DataOutA/DataOutB(to ALU, to LUT, to data_memory, to Program Counter)
+
+*/
 module RegFile #(parameter W=8, A=4)(		 // W = data path width (leave at 8); A = address pointer width
   input                Clk,
                        Reset,

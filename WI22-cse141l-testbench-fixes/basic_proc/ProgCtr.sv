@@ -5,13 +5,28 @@
 //
 // Revision:  2019.01.27
 //
+
+/*
+Inputs:
+	Zero flag(from ALU): For both je and jne instructions
+	Jump Equal(from decoder): On if decoder got a jump equal instruction
+	Jump NotEqual(from decoder): On if decoder got a jne instruction
+	Destination address(from the reg_file): Stored in 1 of 3 dedicated branching registers
+
+Output: Updated Program Counter value
+
+Functionality:
+
+	If either Jump signals are on, then check ALU flag. If ALU flag says to jump, then update Program Counter to the value from the Destination Address input. Otherwise, increment Program Counter by 1.
+
+*/
 module ProgCtr #(parameter L=10) (
   input                Reset,      // reset, init, etc. -- force PC to 0
                        Start,      // Signal to jump to next program; currently unused 
                        Clk,        // PC can change on pos. edges only
                        BranchRel,  // jump to Target + PC
 					        BranchAbs,  // jump to Target
-							  ALU_flag,   // Sometimes you may require signals from other modules, can pass around flags if needed
+							  ALU_flag,   // Zero flag only
   input        [L-1:0] Target,     // jump ... "how high?"
   output logic [L-1:0] ProgCtr     // the program counter register itself
   );

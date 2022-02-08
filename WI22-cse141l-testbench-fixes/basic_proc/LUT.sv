@@ -4,6 +4,14 @@
    Lookup table acts like a function: here Target = f(Addr);
  in general, Output = f(Input); lots of potential applications 
 */
+
+/*
+  In Program 2, we calculated the parity bits based on the data bits stored in memory and we extracted the parity bits that were already in memory.
+
+  Input: 8-bit register that is the result of xor'ing the 2 parity registers.
+  Output: 8-bit value that is all 0's except for the bit that is supposed to be flipped based on the discrepencies in the parity registers.
+*/
+
 module LUT(
   input       [ 1:0] Addr,
   output logic[ 9:0] Target

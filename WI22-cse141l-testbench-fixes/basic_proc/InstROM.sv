@@ -8,6 +8,12 @@
 //
 // Revision: 2020.08.08
 //
+
+/*
+Input: InstAddress(from Program Counter): Address of the instruction to be read and sent to the decoder
+Output: InstOut(send to Decoder): The machine code instruction located at the given address. Ultimately, it will be produced by our assembler and read from a file.
+
+*/
 module InstROM #(parameter A=10, W=9) (
   input       [A-1:0] InstAddress,
   output logic[W-1:0] InstOut);

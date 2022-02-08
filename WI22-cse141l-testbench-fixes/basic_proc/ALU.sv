@@ -6,6 +6,17 @@
 // Additional Comments: 
 //   combinational (unclocked) ALU
 import definitions::*;			          // includes package "definitions"
+
+/*
+Inputs: InputA/InputB(from reg file)
+        OP(from decoder)
+
+Outputs: Out(goes to reg_file)
+        Zero(goes to Prog_Ctr)
+
+For shift operations, InputA is the data to be shifted, InputB is the shift amount.
+Need to add an RXR ALU op and set signals accordingly.
+*/
 module ALU #(parameter W=8, Ops=3)(
   input        [W-1:0]   InputA,          // data inputs
                          InputB,
