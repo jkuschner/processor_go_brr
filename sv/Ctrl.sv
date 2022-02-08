@@ -19,14 +19,20 @@ ALUOp(to ALU): Tells the ALU which op it is doing on its input data.
 */
 module Ctrl (
   input[ 8:0] Instruction,	   // machine code (comes from the Instruction ROM)
-  output logic Jump     ,
-               BranchEn ,
-	       RegWrEn  ,	   // write to reg_file (common)
-	       MemWrEn  ,	   // write to mem (store only)
-	       LoadInst	,	   // mem or ALU to reg_file ?
-      	       StoreInst,          // mem write enable
-	       Ack,		   // "done w/ program"
+
+  output logic  JumpEqual     , // tells PC if it's a je instruction
+                JumpNotEqual,   // tells PC if it's a jne instruction
+               // BranchEn ,
+	              RegWrEn  ,	   // write to reg_file (common)
+	              MemWrEn  ,	   // write to mem (store only)
+	              LoadInst	,	   // mem or ALU to reg_file ?
+      	        StoreInst,          // mem write enable
+	              Ack,		   // "done w/ program"
+
   output logic [1:0] TargSel       // Select signal for LUT
+  output logic [2:0] ReadRegAddr,  // tells reg_file which register to read
+                     WriteRegAddr, // tells reg_file which reg to write to
+                     ALUOp,
   );
 
 assign MemWrEn = Instruction[8:6]==3'b110;	 //111  110
