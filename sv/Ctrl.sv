@@ -29,12 +29,45 @@ module Ctrl (
       	        StoreInst,          // mem write enable
 	              Ack,		   // "done w/ program"
 
-  output logic [1:0] TargSel       // Select signal for LUT
+  output logic [1:0] WriteSource   // tells top_level what data to route to the reg_file for writing
+  // if is 00 then input is from ALU
+  // if is 01 then input is from data_mem
+  // if is 10 then input is from lLUT
+  // if is 11 then input is from mLUT
   output logic [2:0] ReadRegAddr,  // tells reg_file which register to read
                      WriteRegAddr, // tells reg_file which reg to write to
                      ALUOp,
   );
 
+always_comb begin
+  // default to no jumping
+  JumpEqual = '0;
+  JumpNotEqual = '0;
+  // default to non-memory instructions
+  MemWrEn = '0;
+  LoadInst = '0;
+  StoreInst = '0;
+  // default to ALU input
+  WriteSource = '00;
+
+  if (Instruction[8:6] == 3'b000) begin // lsl instruction
+    // shifts write to reg at addr inst[5:3]
+    // data to be shifted is in at reg addr inst[2:0]
+    RegWrEn = '1;
+    WriteRegAddr = Instruction[5:3];
+    ReadRegAddr = Instruction[2:0];
+    ALUOp = kLSH;
+  end else if (Instruction[8:6] == 3'b001) begin // lsr instruction
+    // shifts write to reg at addr inst[5:3]
+    // data to be shifted is in at reg addr inst[2:0]
+    RegWrEn = '1;
+    WriteRegAddr = Instruction[5:3];
+    ReadRegAddr = Instruction[2:0];
+    ALUOp = kRSH;
+  end
+  
+end
+/*
 assign MemWrEn = Instruction[8:6]==3'b110;	 //111  110
 assign StoreInst = Instruction[8:6]==3'b110;  // calls out store specially
 
@@ -57,7 +90,9 @@ assign BranchEn = &Instruction[3:0];
 //   whenever instruction = 9'b110??????; 
 assign TargSel  = Instruction[3:2];
 
+*/
 assign Ack = &Instruction;
+
 
 endmodule
 
