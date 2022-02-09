@@ -34,7 +34,8 @@ module Ctrl (
   // if is 01 then input is from data_mem
   // if is 10 then input is from lLUT
   // if is 11 then input is from mLUT
-  output logic [2:0] ReadRegAddr,  // tells reg_file which register to read
+  output logic [2:0] ReadRegAddrA,  // tells reg_file which register to read
+                     ReadRegAddrB,
                      WriteRegAddr, // tells reg_file which reg to write to
                      ALUOp,
   );
@@ -53,25 +54,44 @@ always_comb begin
   if (Instruction[8:6] == 3'b000) begin // lsl instruction
     // shifts write to reg at addr inst[5:3]
     // data to be shifted is in at reg addr inst[2:0]
+    // shift amount read from r8
     RegWrEn = '1;
     WriteRegAddr = Instruction[5:3];
-    ReadRegAddr = Instruction[2:0];
+    ReadRegAddrA = 3'b100; //r8
+    ReadRegAddrB = Instruction[2:0];
     ALUOp = kLSH;
   end else if (Instruction[8:6] == 3'b001) begin // lsr instruction
     // shifts write to reg at addr inst[5:3]
     // data to be shifted is in at reg addr inst[2:0]
+    // shift amount read from r8
     RegWrEn = '1;
     WriteRegAddr = Instruction[5:3];
-    ReadRegAddr = Instruction[2:0];
+    ReadRegAddrA = 3'b100; //r8
+    ReadRegAddrB = Instruction[2:0];
     ALUOp = kRSH;
   end else if (Instruction[8:5] == 4'b1101) begin // or instruction
     // or writes to reg at addr inst[4:2]
     // other reg is 1'b1 + inst[1:0]
     RegWrEn = '1;
     WriteRegAddr = Instruction[4:2];
-    ReadRegAddr = {1'b1, Instruction[1:0]};
+    ReadRegAddrA = Instruction[4:2];
+    ReadRegAddrB = {1'b1, Instruction[1:0]};
     ALUOp = kORR;
-
+  end else if (Instruction[8:5] == 4'b0110) begin // xor instruction
+    // xor write to reg at addr inst[4:2]
+    // other reg is r8
+    RegWrEn = '1;
+    WriteRegAddr = Instruction[4:2];
+    ReadRegAddrA = Instruction[4:2];
+    ReadRegAddrB = 3'b100; // r8
+    ALUOp = kXOR;
+  end else if (Instruction[8:5] == 4'b0111) begin // rxr instruction
+    //rxr writes to reg at addr inst[4:2]
+    // reduction xor the data in that register
+    RegWrEn = '1;
+    WriteRegAddr = Instruction[4:2];
+    ReadRegAddrA = Instruction[4:2];
+    ALUOp = kRXR;
   end
   
 end
