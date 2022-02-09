@@ -1,5 +1,3 @@
-// Create Date:    2017.01.25
-// Design Name:
 // Module Name:    DataMem
 // single address pointer for both read and write
 // CSE141L
@@ -37,10 +35,6 @@ module DataMem #(parameter W=8, A=8)  (
 // you may initialize your memory w/ constants, if you wish
       for(int i=0;i<256;i++)
 	      Core[i] <= 0;
-      Core[ 16] <= 254;    // overrides the 0  ***sample only***
-      Core[244] <= 5;			 //    likewise
-      Core[0] <= 16;
-      Core[4] <= 24;
 	end
     else if(WriteEn) 
       Core[DataAddress] <= DataIn;
