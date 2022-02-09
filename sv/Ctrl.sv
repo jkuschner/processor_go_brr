@@ -92,6 +92,19 @@ always_comb begin
     WriteRegAddr = Instruction[4:2];
     ReadRegAddrA = Instruction[4:2];
     ALUOp = kRXR;
+  end else if (Instruction[8:5]) == 4'b1110) begin // add instruction
+      // writes to reg at addr inst[4:2]
+      // other operand comes from r8
+      RegWrEn = '1;
+      WriteRegAddr = Instruction[4:2];
+      ReadRegAddrA = Instruction[4:2];
+      ReadRegAddrB = 3'b100; // r8
+      if (Instruction[1] == 1'b0)
+        ALUOp = kADD;
+      else 
+        // Negative should be applied to r8
+        ALUOp = kSUB;
+
   end
   
 end
