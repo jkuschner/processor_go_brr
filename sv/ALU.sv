@@ -10,6 +10,7 @@ import definitions::*;			          // includes package "definitions"
 /*
 Inputs: InputA/InputB(from reg file)
         OP(from decoder)
+        NOTE: Possibly require another input for register 8
 
 Outputs: Out(goes to reg_file)
         Zero(goes to Prog_Ctr)
