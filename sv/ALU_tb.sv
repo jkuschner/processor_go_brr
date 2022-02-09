@@ -34,30 +34,72 @@ ALU uut(
     );
 
 initial begin
-
+ // TESTING ADD
  INPUTA = 1;
  INPUTB = 1;
- op= 'b000; // ADD
+ op= 'b000;
  test_alu_func; // void function call
  #5;
 
-
+ // TESTING AND
  INPUTA = 4;
  INPUTB = 1;
  op= 'b100; // AND
- test_alu_func; // void function call
+ test_alu_func;
+ #5;
+  
+ // TESTING LSH
+ INPUTA = 'b00001000;
+ INPUTB = 1;
+ op= 'b001;
+ test_alu_func;
+ #5;
+  
+ // TESTING RSH
+ INPUTA = 'b00001000;
+ INPUTB = 1;
+ op= 'b010;
+ test_alu_func;
+ #5;
+  
+ // TESTING XOR
+ INPUTA = 'b00001111;
+ INPUTB = 'b11110000;
+ op= 'b011;
+ test_alu_func;
+ #5;
+  
+ // TESTING ORR
+ INPUTA = 'b00001111;
+ INPUTB = 'b11110000;
+ op= 'b100;
+ test_alu_func;
+ #5;
+  
+ // TESTING SUB
+ INPUTA = 4;
+ INPUTB = 1;
+ op= 'b101;
+ test_alu_func;
+ #5;
+  
+ // TESTING RXR
+ INPUTA = 'b00000001;
+ op= 'b111;
+ test_alu_func;
  #5;
  end
-
+  
  task test_alu_func;
  begin
    case (op)
-  0: expected = INPUTA + INPUTB;  // ADD 
-  1: expected = {INPUTA[6:0], SC_IN};  // LSH
+  0: expected = INPUTA + INPUTB;      // ADD 
+  1: expected = {INPUTA[6:0], SC_IN}; // LSH
   2: expected = {1'b0, INPUTA[7:1]};  // RSH
-  3: expected = INPUTA ^ INPUTB;  // XOR
-  4: expected = INPUTA & INPUTB;     //AND
-  5: expected = INPUTA - INPUTB;   // SUB
+  3: expected = INPUTA ^ INPUTB;      // XOR
+  4: expected = INPUTA & INPUTB;      // AND
+  5: expected = INPUTA - INPUTB;      // SUB
+  7: expected = ^INPUTA;              // RXR
    endcase
    #1; if(expected == OUT)
   begin
