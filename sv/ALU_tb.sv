@@ -90,7 +90,7 @@ initial begin
   1: expected = {INPUTA[6:0], SC_IN}; // LSH
   2: expected = {1'b0, INPUTA[7:1]};  // RSH
   3: expected = INPUTA ^ INPUTB;      // XOR
-  4: expected = INPUTA & INPUTB;      // AND
+  4: expected = INPUTA | INPUTB;      // ORR
   5: expected = INPUTA - INPUTB;      // SUB
   7: expected = ^INPUTA;              // RXR
    endcase
