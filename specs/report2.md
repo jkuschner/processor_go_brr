@@ -294,167 +294,185 @@ jne #1
 ```
 ### Program 2
 ```
-spc #1, #0          // store addr of start of outer loop
-mov #2              // r8 = 2
-cpy r1              // r1 = 2
-mov #5              // r8 = 5
-lsl r1, r1          // r1 = 2 * 2^5 = 64 (for loop counting)
-ld  r2, [r1]        // load data_mem[i] into r2(LSW)
-mov #1              // mov 1 into r8 (for upcoming add)
-add r1, #0           // set i to i+1
-ld  r3, [r1]        // load data_mem[i+1] into r3(MSW)
-mov #5
-lsl r6, r2          // r6 = p2_p1_p16_0_0000
-mov #6
-lsr r6, r6          // r6 = 0000_00_p2_p1
-mov #3
-lsl r4, r2, #3      // r4 = p4_b1_p2_p1_p16_000
-mov #7
-lsr r4, r4          // r4 = 0000_000p4
-mov #2
-lsl r4, r4          // r4 = 0000_0_p4_00
-or  r6, r4          // store p4 into r6(parity reg)
-mov #7
-lsl r4, r3          // r4 = p8_000_0000
-mov #4
-lsr r4, r4          // r4 = 0000_p8_000
-or  r6, r4          // store p8 into r6(parity reg)
+spc #1, #0          # store addr of start of the loop
+mov #2              
+cpy r1              
+mov #5              
+lsl r1, r1          # loop's starting index i is now set at 64
+ld  r2, [r1]        # load data_mem[i] into r2 (LSW - b4:2_p4_b1_p2:p1_p16)
+mov #1              
+add r1, #0           
+ld  r3, [r1]        # load data_mem[i+1] into r3 (MSW - b11:b5_p8)
 
+# begin setting up byte to hold our parity bits
+mov #5              # parity register -> r6; parity = p2:p1_p16_0_0000
+lsl r6, r2         
+mov #6               
+lsr r6, r6          # parity = 0000_00_p2:p1
+mov #3
+lsl r4, r2, #3     
+mov #7              # tmp -> r4; extract p4 from LSW
+lsr r4, r4          
+mov #2      
+lsl r4, r4          
+or  r6, r4          # parity = 0000_0_p4_p2:p1
+mov #7              # start extracting p8 from MSW
+lsl r4, r3          
 mov #4
-lsl r4, r2          // r4 = b1_p2_p1_p16_0000
+lsr r4, r4          
+or  r6, r4          # parity = 0000_p8_p4_p2:p1 
+
+# setting up tLSW
+mov #4              # tLSW -> r4; tLSW = b1_p2:p1_p16
+lsl r4, r2          
 mov #7
-lsr r4, r4          // r4 = 0000_000_b1
+lsr r4, r4         
 mov #5
-lsr r5, r2          // r5 = 0000_0_b4:b2
+lsr r5, r2          # tmp -> r5; tmp = 0000_0_b4:b2
 mov #1
-lsl r5, r5          // r5 = 0000_b4:b2_0_0000
-or  r4, r5          // r4 = 0000_b4:b1
-mov #1
-lsr r5, r3          // r5 = 0_b11:b5
+lsl r5, r5          
+or  r4, r5          # tLSW = 0000_b4:b1
+mov #1              # start extracting b8:b5 from MSW
+lsr r5, r3          
 mov #4
-lsl r5, r5          // r5 = b8:b5_0000
-or  r4, r5          // r4 = b8:b1
+lsl r5, r5         
+or  r4, r5          # tLSW = b8:b1
+
+# setting up tRSW
 mov #5
-lsr r5, r3          // r5 = 00000_b11:b9
+lsr r5, r3          # r5 = 00000_b11:b9
 
 mov #0
-lsl r3, r5          // r3 = 00000_b11:b9 (MSW)
+lsl r3, r5          # r3 = 00000_b11:b9 (MSW)
 mov #0
-lsl r2, r4          // r2 - b8:b1 (LSW)
+lsl r2, r4          # r2 - b8:b1 (LSW)
 
+
+# Calculating parity bits from message bits
 mov #4
-lsr r4, r2          // r4 = 0000_b8:b5
+lsr r4, r2          # r4 = 0000_b8:b5
 mov #4
-lsl r5, r3          // r5 = 0_b11:b9_0000
-or  r5, r4          // r5 = 0_b11:b5
-rxr r5              // store p8 in r5
+lsl r5, r3          # r5 = 0_b11:b9_0000
+or  r5, r4          # r5 = 0_b11:b5
+rxr r5              # store p8 in r5
 mov #3
-lsr r5, r5          // 0000_p8_000
+lsr r5, r5          # 0000_p8_000
 mov #0
-cpy r7              // 0 out r7(nParity)
-or  r7, r5          // store p8 in nParity reg
+cpy r7              # 0 out r7(nParity)
+or  r7, r5          # store p8 in nParity reg
 
+# Calculating p4
 mov #4
-lsl r4, r3          // r4 = 0_b11:b9_0000
+lsl r4, r3          # r4 = 0_b11:b9_0000
 mov #7
-lsr r5, r2          // r5 = 0000_000_b8
+lsr r5, r2          # r5 = 0000_000_b8
 mov #3
-lsl r5, r5          // r5 = 0000_b8_000
-or  r4, r5          // r4 = 0_b11:b8_000
+lsl r5, r5          
+or  r4, r5          # r4 = 0_b11:b8_000
 mov #4
-lsr r5, r2          // r5 = b4:b1_0000
+lsr r5, r2          # r5 = b4:b1_0000
 mov #5
-lsl r5, r5          // r5 = 0000_0_b4:b2
-or  r4, r5          // r4 = 0_b11:b8_b4:b2
-rxr r4              // r4 = 0000_000_p4
+lsl r5, r5          # r5 = 0000_0_b4:b2
+or  r4, r5          # r4 = 0_b11:b8_b4:b2
+rxr r4              # r4 = 0000_000_p4
 mov #2
-lsr r4, r4          // r4 = 0000_0_p4_00
-or  r7, r4          // r7 = 0000_p8_p4_00
+lsr r4, r4          # r4 = 0000_0_p4_00
+or  r7, r4          # r7 = 0000_p8_p4_00
 
+# Calculating p2
 mov #2
-lsr r4, r3          // r4 = 0000_00_b11:b10
+lsr r4, r3          # r4 = 0000_00_b11:b10
 mov #5
-lsl r4, r4          // r4 = 0_b11:b10_0_0000
+lsl r4, r4          # r4 = 0_b11:b10_0_0000
 mov #1
-lsl r5, r2          // r5 = b7:b6_XX_XXX0
+lsl r5, r2          # r5 = b7:b6_XX_XXX0
 mov #6
-lsr r5, r5          // r5 = 0000_00_b7:b6
+lsr r5, r5          # r5 = 0000_00_b7:b6
 mov #3
-lsl r5, r5          // r5 = 000_b7_b6_000
-or  r4, r5          // r4 = 0_b11:b10_b7_b6_000
+lsl r5, r5          # r5 = 000_b7_b6_000
+or  r4, r5          # r4 = 0_b11:b10_b7_b6_000
 mov #4
-lsl r5, r2          // r5 = b4:b3_XX_0000
+lsl r5, r2          # r5 = b4:b3_XX_0000
 mov #6
-lsr r5, r5          // r5 = 0000_00_b4:b3
+lsr r5, r5          # r5 = 0000_00_b4:b3
 mov #1
-lsl r5, r5          // r5 = 0000_0_b4:b3_0
-or  r4, r5          // r4 = 0_b11:b10_b7_b6_b4:b3_0
+lsl r5, r5          # r5 = 0000_0_b4:b3_0
+or  r4, r5          # r4 = 0_b11:b10_b7_b6_b4:b3_0
 mov #7
-lsl r5, r2          // r5 = b1_000_0000
+lsl r5, r2          # r5 = b1_000_0000
 mov #7
-lsr r5, r5          // r5 = 0000_000_b1
-or  r4, r5          // r4 = 0_b11:b10_b7_b6_b4:b3_b1
-rxr r4              // r4 = 0000_000_p2
+lsr r5, r5          # r5 = 0000_000_b1
+or  r4, r5          # r4 = 0_b11:b10_b7_b6_b4:b3_b1
+rxr r4              # r4 = 0000_000_p2
 mov #1
-lsr r4, r4          // r4 = 0000_00_p2_0
-or  r7, r4          // r7 = 0000_p8_p4_p2_0
+lsr r4, r4          # r4 = 0000_00_p2_0
+or  r7, r4          # r7 = 0000_p8_p4_p2_0
 
+# Calculating p1
 mov #2
-lsr r4, r3          // r4 = 0000_000_b11
+lsr r4, r3          # r4 = 0000_000_b11
 mov #6
-lsl r4, r4          // r4 = 0_b11_00_0000
+lsl r4, r4          # r4 = 0_b11_00_0000
 mov #7
-lsl r5, r3          // r5 = b9_000_0000
+lsl r5, r3          # r5 = b9_000_0000
 mov #2
-lsr r5, r5          // r5 = 00_b9_0_0000
-or  r4, r5          // r4 = 0_b11_b9_0_0000
+lsr r5, r5          # r5 = 00_b9_0_0000
+or  r4, r5          # r4 = 0_b11_b9_0_0000
 mov #1
-lsl r5, r2          // r5 = b7_XXX_XXX0
+lsl r5, r2          # r5 = b7_XXX_XXX0
 mov #7
-lsr r5, r5          // r5 = 0000_000_b7
+lsr r5, r5          # r5 = 0000_000_b7
 mov #4
-lsl r5, r5          // r5 = 000_b7_0000
-or  r4, r5          // r4 = 0_b11_b9_b7_0000
+lsl r5, r5          # r5 = 000_b7_0000
+or  r4, r5          # r4 = 0_b11_b9_b7_0000
 mov #3
-lsl r5, r2          // r5 = b5:b4_XX_X000
+lsl r5, r2          # r5 = b5:b4_XX_X000
 mov #6
-lsr r5, r5          // r5 = 0000_00_b5:b4
+lsr r5, r5          # r5 = 0000_00_b5:b4
 mov #2
-lsl r5, r5          // r5 = 0000_b5:b4_00
-or  r4, r5          // r4 = 0_b11_b9_b7_b5:b4_00
+lsl r5, r5          # r5 = 0000_b5:b4_00
+or  r4, r5          # r4 = 0_b11_b9_b7_b5:b4_00
 mov #6
-lsl r5, r2          // r5 = b2:b1_00_0000
+lsl r5, r2          # r5 = b2:b1_00_0000
 mov #6
-lsr r5, r5          // r5 = 0000_00_b2:b1
-or  r4, r5          // r4 = 0_b11_b9_b7_b5:b4_b2:b1
-rxr r4              // r4 = 0000_000_p1
-or  r7, r4          // r7 = 0000_p8_p4_p2_p1
+lsr r5, r5          # r5 = 0000_00_b2:b1
+or  r4, r5          # r4 = 0_b11_b9_b7_b5:b4_b2:b1
+rxr r4              # r4 = 0000_000_p1
+or  r7, r4          # r7 = 0000_p8_p4_p2_p1
 
-mov #7              // r8 = 7 (other reg for upcoming xor)
-xor r6              // r6 = flipped parities
-lut r6, r4, #1      // r4 = bits to flip in MSW
-lut r6, r5, #0      // r5 = bits to flip in LSW
-mov #4              // r8 = 4 (other reg for upcoming xor)
-xor r3              // r3 = possibly corrected MSW
-mov #5              // r8 = 5 (other reg for upcoming xor)
-xor r2              // r2 = possibly corrected LSW
-mov #29             // r8 = 29
-add r1, #0          // set r1 to i+30
-str r2, [r1]        // store corrected LSW into data_mem[i+30]
-mov #1              // r8 = 1
-add r1, #0          // set r1 to i+31
-str r3, [r1]        // store corrected MSW into data_mem[i+31]
-mov #29             // r8 = 29
-add r1, #1          // set r1 to i+2
-mov #1              // r8 = 1
-cpy r2              // r2 = 1
-mov #6              // r8 = 6
-lsl r2, r2          // r2 = 1 * 2^6 = 64 
-mov #30             // r8 = 30
-add r2, #0          // r2 = 64 + 30 = 94 (to set comparison for i)
-mov #1              // r8 = 1 (other reg for upcoming xor)
-xor r2              // compare i to 94
-jne #1
+# Error correction/detection
+mov #7              # r8 = 7 (other reg for upcoming xor)
+xor r6              # r6 = flipped parities
+
+# Lookup tables to figure wrong bits
+lut r6, r4, #1      # r4 = bits to flip in MSW
+lut r6, r5, #0      # r5 = bits to flip in LSW
+
+mov #4              # r8 = 4 (other reg for upcoming xor)
+xor r3              # r3 = possibly corrected MSW
+mov #5              # r8 = 5 (other reg for upcoming xor)
+xor r2              # r2 = possibly corrected LSW
+
+# Storing into data_mem
+mov #29             # r8 = 29
+add r1, #0          # set r1 to i+30
+str r2, [r1]        # store corrected LSW into data_mem[i+30]
+mov #1              # r8 = 1
+add r1, #0          # set r1 to i+31
+str r3, [r1]        # store corrected MSW into data_mem[i+31]
+
+# Eval loop conditions
+mov #29             # r8 = 29
+add r1, #1          # set r1 back to i+2
+mov #1              
+cpy r2              # r2 = 1
+mov #6              
+lsl r2, r2          
+mov #30             
+add r2, #0          # r2 = 94 (to set comparison for i)
+mov #1              # r8 = 1 (other reg for upcoming xor)
+xor r2              # compare i to 94
+jne #1              # If != 94, continue the loop
 ```
 ### Program 3
 ```
@@ -586,7 +604,7 @@ cts c
 ```
 
 #### Changelog
-- Added comments to Program 3 assembly code
+- Added comments to Program 2 and 3 assembly code
 
 
 ## Milestone 2
@@ -595,7 +613,7 @@ cts c
 - Not yet completed
 
 ### Register File Description
-- Not yet completed
+- 
 
 ### Timing Diagrams
 - Not yet completed
