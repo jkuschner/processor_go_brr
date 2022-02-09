@@ -6,8 +6,8 @@
 */
 
 module LUT_MSW(
-	input       [7:0] pFlip;
-	output logic[7:0] bFlip;
+	input       [7:0] pFlip,
+	output logic[7:0] bFlip
 	);
 	
 // NOTE: This is specifically the LSW LUT (LUTs are limited to 16 elements each, so we need one per MSW/LSW)
