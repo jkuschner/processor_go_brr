@@ -1,5 +1,4 @@
 // Module Name:    ProgCtr
-// Project Name:   CSE141L
 // Description:    instruction fetch (pgm ctr) for processor
 
 /*
