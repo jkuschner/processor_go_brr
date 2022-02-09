@@ -64,6 +64,14 @@ always_comb begin
     WriteRegAddr = Instruction[5:3];
     ReadRegAddr = Instruction[2:0];
     ALUOp = kRSH;
+  end else if (Instruction[8:5] == 4'b1101) begin // or instruction
+    // or writes to reg at addr inst[4:2]
+    // other reg is 1'b1 + inst[1:0]
+    RegWrEn = '1;
+    WriteRegAddr = Instruction[4:2];
+    ReadRegAddr = {1'b1, Instruction[1:0]};
+    ALUOp = kORR;
+
   end
   
 end
