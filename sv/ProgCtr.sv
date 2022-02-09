@@ -1,10 +1,6 @@
-// Design Name:    basic_proc
-// Module Name:    InstFetch 
+// Module Name:    ProgCtr
 // Project Name:   CSE141L
 // Description:    instruction fetch (pgm ctr) for processor
-//
-// Revision:  2019.01.27
-//
 
 /*
 Inputs:
@@ -24,10 +20,10 @@ module ProgCtr #(parameter L=10) (
   input                Reset,      // reset, init, etc. -- force PC to 0
                        Start,      // Signal to jump to next program; currently unused 
                        Clk,        // PC can change on pos. edges only
-                       BranchRel,  // jump to Target + PC
-					        BranchAbs,  // jump to Target
-							  ALU_flag,   // Zero flag only
-  input        [L-1:0] Target,     // jump ... "how high?"
+			JmpEq,  // je (jump if equal) insn
+			JmpNe,  // jne (jump if not equal) insn
+			Zero,   // Zero flag only
+  input        [L-1:0] DestAddr,     // jump ... "how high?"
   output logic [L-1:0] ProgCtr     // the program counter register itself
   );
   
@@ -35,13 +31,13 @@ module ProgCtr #(parameter L=10) (
   // program counter can clear to 0, increment, or jump
   always_ff @(posedge Clk)	           // or just always; always_ff is a linting construct
 	if(Reset)
-	  ProgCtr <= 0;				       // for first program; want different value for 2nd or 3rd
-	else if(BranchAbs)	               // unconditional absolute jump
-	  ProgCtr <= Target;			   //   how would you make it conditional and/or relative?
-	else if(BranchRel)   // conditional relative jump
-	  ProgCtr <= Target + ProgCtr;	   //   how would you make it unconditional and/or absolute
+	  ProgCtr <= 0;				   // for first program; want different value for 2nd or 3rd
+	else if(JmpEq or JmpNe) begin	           // check if either jump signals are on
+	    if(Zero)			   		// check ALU flag
+		ProgCtr <= DestAddr;
+	end
 	else
-	  ProgCtr <= ProgCtr+'b1; 	       // default increment (no need for ARM/MIPS +4 -- why?)
+	  ProgCtr <= ProgCtr+'b1; 	       // default increment
 
 endmodule
 
