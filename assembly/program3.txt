@@ -1,103 +1,125 @@
-mov #20
-cpy r1              // set r1 to 20
+mov #20             # Setting up to access data_mem[160]
+cpy r1              
 mov #3
-lsl r1, r1          // multipy r1 by 8, r1 = 160
-ld  r2, [r1]        // load data_mem[160] into r2(pattern)
-ctc a               // clear act reg
-ctc b               // clear bct reg
-ctc c               // clear cct reg
+lsl r1, r1          # r1 = 160
+ld  r2, [r1]        # load data_mem[160] into r2(pattern)
+ctc a               # clear count registers (part a -> act, b -> bct, c -> cct)
+ctc b               
+ctc c               
 
 mov #16
 cpy r1
 mov #3
-lsl r1, r1          // set r1 to 128(i)
-spc #1, #0          // start of outer loop
-ctc b_flag          // clear b_flag reg
-ld  r5, [r1]        // load data_mem[i] into r5(LSW)
+lsl r1, r1          # set r1 to 128 (i)
+spc #1, #0          # start of outer loop
 
+# Outer loop: moving across data_mem[128] to [160]
+ctc b_flag          # clear b_flag reg
+ld  r5, [r1]        # load data_mem[i] into r5(LSW)
 mov #19
-cpy r3
+cpy r3              # set up r3 for upcoming comparison
 mov #3
 lsl r3, r3
-mov #7              // mov 7 into r8 (for upcoming add)
-add r3, 0           // r3 = 159
-mov #1              // r8 = 1 (other register for upcoming xor)
-xor r3              // compare i to 159
-mov #4              // r8 = 4
-spc #3, #1          // skip to line 21 on jump(mov r3, #0)
+mov #7              
+add r3, 0           # r3 = 159
+mov #1              # r8 = 1 (other register for upcoming xor)
+xor r3              # compare i to 159; check if we're on the last element for the outer loop
+mov #4              
+spc #3, #1          # skip to line 21 on jump(mov r3, #0)
 je  #3
 
-mov #1             // mov 1 into r8 (for upcoming add)
-add r1, #0          // i = i+1
-ld  r6, [r1]        // load data_mem[i+1] into r6(MSW)
+# if i != 159
+mov #1              # mov 1 into r8 (for upcoming add)
+add r1, #0          # i = i+1
+ld  r6, [r1]        # load data_mem[i+1] into r6(MSW)
 
+# First inner loop; finding # of occurrences (a),(b),(c)
 mov #0
-cpy r3              // set r3 to 0(j)
-spc #2, #0          // start of first inner loop
-sbs r4              // r4 = LSW[j:j+5]_000
-mov #2              // r8 = 2 (other register for upcoming xor)
-xor r4              // compare r4 and pattern
-mov #5              // r8 = 5 (jump distance)
-spc #3, #1          // skip to line 31 on jump(add r3, #1)
+cpy r3              # set r3 to 0 (index j)
+spc #2, #0          # start of first inner loop
+
+sbs r4              # r4 = LSW[j:j+5]_000; getting five bits
+mov #2              # r8 = 2 (other register for upcoming xor)
+xor r4              # compare r4 and pattern
+
+# If pattern not found, prepare jump:
+mov #5              # r8 = 5 (jump distance)
+spc #3, #1          # skip to line 31 on jump(add r3, #1)
 jne #3
-cti b_flag          // set b_flag to 1
-cti a               // increment act
-cti c               // increment cct
+
+# If pattern found:
+cti b_flag          # set b_flag to 1 
+cti a               # increment act
+cti c               # increment cct
+
 mov #1
-add r3, #0          // increment j
+add r3, #0          # increment j
 mov #4
 cpy r7        
-mov #3              // r8 = 3 (other register for upcoming xor)
-xor r7              // compare j to 4
-jne #2
+mov #3              # r8 = 3 (other register for upcoming xor)
+xor r7              # compare j to 4
+jne #2             
+# End of first inner loop
 
-cbf                 // set zero flag based on b_flag
-mov #4              // r8 = 4 (jump distance)
-spc #3, #1          // skip to line 43 on jump(mov r3, #0)
+cbf                 # set zero flag based on b_flag
+mov #4              # r8 = 4 (jump distance)
+spc #3, #1          # skip to line 43 on jump(mov r3, #0)
 je  #3
-cti b               // increment bct
-ctc b_flag          // clear b_flag
+cti b               # increment bct
+ctc b_flag          # clear b_flag
 
 mov #0
-cpy r3              // set r3 to 0(j)
+cpy r3              # set r3 to 0 (index j); j is set up for second inner loop
 
 mov #19
 cpy r7
 mov #3
 lsl r7, r7
 mov #7
-add r7, #0          // r7 = 159
-mov #1              // r8 = 1 (other reg for upcoming xor)
-xor r7              // compare i to 159
-mov #10             // r8 = 10 (jump distance)
-spc #3, #1          // skip to (add r3, #1)
+add r7, #0          # r7 = 159
+mov #1              # r8 = 1 (other reg for upcoming xor)
+xor r7              # compare i to 159; check if we're on the last element for the outer loop
+
+# If i == 159, don't go into second inner loop + skip
+mov #10             # r8 = 10 (jump distance)
+spc #3, #1          # skip to (add r3, #1)
 je  #3
-spc #2, #0          // start of second inner loop
-dbs r4              // r4 = LSW[j:] + MSW[:j+5]
-mov #2              // r8 = 2 (other reg for upcoming xor)
-xor r4              // compare r4 and pattern
-mov #3              // r8 = 3 (jump distance)
-spc #3, #1          // skip to (add r3, #1)
+
+# Second inner loop; for finding # of occurrences anywhere in the string (c)
+spc #2, #0          # start of second inner loop
+dbs r4              # r4 = LSW[j:] + MSW[:j+5]
+mov #2              # r8 = 2 (other reg for upcoming xor)
+xor r4              # compare r4 and pattern
+
+# If pattern not found, prepare jump: 
+mov #3              # r8 = 3 (jump distance)
+spc #3, #1          # skip to (add r3, #1)
 jne #3
-cti c               // increment cct
+
+# If pattern found:
+cti c               # increment cct
 mov #1
-add r3, #0          // increment j
+
+add r3, #0          # increment j
 mov #4
-cpy r7              // r7 = 4
-mov #3              // r8 = 3 (other reg for upcoming xor)
-xor r7              // compare j to 4
-jne #2
+cpy r7              # r7 = 4
+mov #3              # r8 = 3 (other reg for upcoming xor)
+xor r7              # compare j to 4
+jne #2              
+# End of second inner loop
 
 mov #1
-add r1, #0          // increment i
+add r1, #0          # increment i
 mov #20
-cpy r7              // set r7 to 20
+cpy r7              
 mov #3
-lsl r7, r7          // r7 = 160
-mov #1              // r8 = 1 (other reg for upcoming xor)
-xor r7              // compare 160 and i
+lsl r7, r7          # r7 = 160
+mov #1              # r8 = 1 (other reg for upcoming xor)
+xor r7              # compare 160 and i if we need to continue the loop
 jne #1
+# End of outer loop
 
+# Storing the counters of a, b, and c
 cts a
 cts b
 cts c
