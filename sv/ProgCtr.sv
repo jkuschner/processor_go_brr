@@ -31,7 +31,7 @@ module ProgCtr #(parameter L=10) (
   always_ff @(posedge Clk)	           // or just always; always_ff is a linting construct
 	if(Reset)
 	  ProgCtr <= 0;				   // for first program; want different value for 2nd or 3rd
-	else if(JmpEq or JmpNe) begin	           // check if either jump signals are on
+	else if(JmpEq || JmpNe) begin	           // check if either jump signals are on
 	    if(Zero)			   		// check ALU flag
 		ProgCtr <= DestAddr;
 	end

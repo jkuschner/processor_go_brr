@@ -5,7 +5,7 @@
   Output: 8-bit value that is all 0's except for the bit that is supposed to be flipped based on the discrepancies in the parity registers.
 */
 
-module LUT_MSW(
+module LUT_LSW(
 	input       [7:0] pFlip,
 	output logic[7:0] bFlip
 	);
