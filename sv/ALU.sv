@@ -40,7 +40,6 @@ module ALU #(parameter W=8, Ops=3)(
       RSH : Out = InputA >> InputB;       // logical shift right (InputB is grabbed from r8)
       XOR : Out = InputA ^ InputB;        // bitwise XOR
       RXR : Out = ^InputA;                // reduction XOR
-      AND : Out = InputA & InputB;        // bitwise AND
       SUB : Out = InputA + (~InputB) + 1; // sub
       ORR : Out = InputA | InputB;        // bitwise OR
     endcase

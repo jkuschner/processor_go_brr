@@ -40,13 +40,6 @@ initial begin
  op= 'b000;
  test_alu_func; // void function call
  #5;
-
- // TESTING AND
- INPUTA = 4;
- INPUTB = 1;
- op= 'b100; // AND
- test_alu_func;
- #5;
   
  // TESTING LSH
  INPUTA = 'b00001000;
