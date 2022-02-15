@@ -29,11 +29,12 @@ module Ctrl (
       	        StoreInst,          // mem write enable
 	              Ack,		   // "done w/ program"
 
-  output logic [1:0] WriteSource,   // tells top_level what data to route to the reg_file for writing
-  // if is 00 then input is from ALU
-  // if is 01 then input is from data_mem
-  // if is 10 then input is from lLUT
-  // if is 11 then input is from mLUT
+  output logic [2:0] WriteSource,   // tells top_level what data to route to the reg_file for writing
+  // if is 000 then input is from ALU
+  // if is 001 then input is from data_mem
+  // if is 010 then input is from lLUT
+  // if is 011 then input is from mLUT
+  // if is 100 then input is from ProgCtr
   output logic [2:0] ReadRegAddrA,  // tells reg_file which register to read
                      ReadRegAddrB,
                      WriteRegAddr, // tells reg_file which reg to write to
@@ -49,7 +50,7 @@ always_comb begin
   LoadInst = '0;
   StoreInst = '0;
   // default to ALU input
-  WriteSource = '00;
+  WriteSource = '0;
 
   if (Instruction[8:6] == 3'b000) begin // lsl instruction
     // shifts write to reg at addr inst[5:3]
