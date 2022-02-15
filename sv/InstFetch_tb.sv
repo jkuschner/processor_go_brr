@@ -32,6 +32,7 @@ InstROM insr(
 
 
 initial begin
+Reset = 0;
   {Start, Eq, Neq, Zero, DestAddr, InstOut} = 0;   // initializing inputs
   #150ps; // testing program ctr incrementing
   $display("PC: %d", ctr);
@@ -41,28 +42,34 @@ initial begin
   expected = 'b001_011_010;
   Zero = 1;
   Eq = 1;
+  #10ps
   test_fetch;
 
 
-  #10ps
+  #100ps
   DestAddr = 50;     //  instr rom[50]: InstOut = 'b000_001_100;
   expected = 'b000_001_100;
   Eq = 0;
   Neq = 1;
   Zero = 0;
+  #10ps
   test_fetch;
 
-  #10ps
-  expected = 0;
+  #100ps
+  DestAddr = 4;
+  expected = 'b01000_100_0;
   Zero = 1;
-  test_fetch;
-
   #10ps
-  expected = 0;
+  not_taken;
+
+  #100ps
+  DestAddr = 60;
+  expected = 'b000_011_101;
   Zero = 0;
   Eq = 1;
   Neq = 0;
-  test_fetch;
+  #10ps
+  not_taken;
 
   #30ps;
 
@@ -71,16 +78,21 @@ initial begin
 task test_fetch;
  begin
   if(expected == InstOut) 
-  begin
-   $display("@%t YAY!! Inst: %b", $time, InstOut);
+    $display("YAY!! Inst: %b", InstOut);
+  else $display("UH oh!! Inst: %b", InstOut);
   end
-     else begin $display("@%t UH oh!! Inst: %b", $time, InstOut);
+endtask 
 
- end
+task not_taken;
+ begin
+  if(expected != InstOut) 
+    $display("YAY!! Inst %b not taken", InstOut);
+  else $display("UH oh!! Inst %b was taken", InstOut);
+  end
 endtask 
 
 always begin   
-  #5ps  Clk = ~Clk;
+  #5ns  Clk = ~Clk;
 end
 
 endmodule
