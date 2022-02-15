@@ -16,7 +16,7 @@ module RegFile #(parameter W=8, A=4)(		 // W = data path width (leave at 8); A =
                        RaddrB,
                        Waddr,
   input        [W-1:0] DataIn,
-  output       [W-1:0] DataOutA,			 
+  output logic [W-1:0] DataOutA,			 
   output logic [W-1:0] DataOutB				 
     );
 
