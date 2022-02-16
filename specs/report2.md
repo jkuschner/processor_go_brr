@@ -65,8 +65,8 @@
 7. rxr      `[4'b 0111 | 3'b reg encode | 2'b unused]`
 8. add      `[4'b 1110 | 3'b reg encode | 1'b choice| 1'b unused]`
 9. mov      `[4'b 1111 | immi5]`
-10. je      `[5'b 10000 | 3'b choice | 1'b unused]`
-10. jne     `[5'b 10001 | 3'b choice | 1'b unused]`
+10. je      `[5'b 10000 | 2'b choice | 2'b unused]`
+10. jne     `[5'b 10001 | 2'b choice | 2'b unused]`
 11. spc     `[4'b 1001 | 2'b reg choice | offset1 | 2'b unused]`
 12. lut     `[4'b 1010 | 3'b reg encode | 1'b choice | 1'b unused]`
 13. ctc     `[4'b 1011 | 2'b ctr op | 2'b reg choice | 1'b unused]`

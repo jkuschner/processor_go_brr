@@ -30,27 +30,37 @@ module Ctrl (
 	              Ack,		   // "done w/ program"
 
   output logic [2:0] WriteSource,   // tells top_level what data to route to the reg_file for writing
-  // if is 000 then input is from ALU
-  // if is 001 then input is from data_mem
-  // if is 010 then input is from lLUT
-  // if is 011 then input is from mLUT
-  // if is 100 then input is from ProgCtr
-  output logic [2:0] ReadRegAddrA,  // tells reg_file which register to read
+                    // if is 000 then input is from ALU
+                    // if is 001 then input is from data_mem
+                    // if is 010 then input is from lLUT
+                    // if is 011 then input is from mLUT
+                     ALUOp,
+                     PCRegSelect,   // tells the PC which reg to use for saving/jumping address
+                     // 00 -> no jump/save
+                     // 01 -> jump/save with PCreg1
+                     // 10 -> jump/save with PCreg2
+                     // 11 -> jump/save with PCreg3
+
+  output logic [3:0] ReadRegAddrA,  // tells reg_file which register to read
                      ReadRegAddrB,
                      WriteRegAddr, // tells reg_file which reg to write to
-                     ALUOp
+  output logic [7:0] ImmOut         // wire to send immidieate data directly to reg file
   );
 
 always_comb begin
   // default to no jumping
   JumpEqual = '0;
   JumpNotEqual = '0;
+  PCRegSelect = '0;
   // default to non-memory instructions
   MemWrEn = '0;
   LoadInst = '0;
   StoreInst = '0;
+  RegWrEn = 0;
   // default to ALU input
   WriteSource = '0;
+  // ImmOut is only used for mov instruction, so is always the same
+  ImmOut = { 3'b000, Instruction[4:0]};
 
   if (Instruction[8:6] == 3'b000) begin // lsl instruction
     // shifts write to reg at addr inst[5:3]
@@ -105,8 +115,19 @@ always_comb begin
       else 
         // Negative should be applied to r8
         ALUOp = kSUB;
-
+  end else if (Instruction[8:5] == 4'b1111) begin // mov instruction
+      // writes inst[4:0] into r8 using ImmOut
+      RegWrEn = 1;
+      WriteRegAddr = 3'b100; //write to r8
+  end else if (Instruction[8:5] == 4'b1000) begin // je and jne instruction
+      // set PCRegSelect to Instruction[3:2]
+      PCRegSelect = Instruction[3:2];
+      if(Instruction[4] == 0)
+        JumpEqual = 1;
+      else 
+        JumpNotEqual = 1;
   end
+
   
 end
 /*
