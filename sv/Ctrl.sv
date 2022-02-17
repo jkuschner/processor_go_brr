@@ -41,6 +41,7 @@ module Ctrl (
                     // if is 001 then input is from data_mem
                     // if is 010 then input is from lLUT
                     // if is 011 then input is from mLUT
+                    // if is 100 then input is from ImmOut
                      ALUOp,
   output logic [3:0] ReadRegAddrA,  // tells reg_file which register to read
                      ReadRegAddrB,
@@ -121,6 +122,7 @@ always_comb begin
       // writes inst[4:0] into r8 using ImmOut
       RegWrEn = 1;
       WriteRegAddr = 3'b100; //write to r8
+      WriteSource = 3'b100;
   end else if (Instruction[8:5] == 4'b1000) begin // je and jne instruction
       // set PCRegSelect to Instruction[3:2]
       PCRegSelect = Instruction[3:2];
@@ -131,8 +133,17 @@ always_comb begin
   end else if (Instruction[8:5] == 4'b1001) begin // spc instruction
       PCRegSelect = Instruction[4:3];
       OffsetEn = Instruction[2];
+  end else if (Instruction[8:5] == 4'b1010) begin // lut instruction
+      RegWrEn = 1;
+      WriteRegAddr = 3'b100; // write to r8
+      if (Instruction[1] == 0) begin
+        WriteSource = 3'b010; //tells regfile to read from LUT_LSW
+        ReadRegAddrA = Instruction[4:2];
+      end else begin
+        WriteSource = 3'b011; // tells regfile to read from LUT_MSW
+        ReadRegAddrB = Instruction[4:2];
+      end
   end
-        
 
   
 end
