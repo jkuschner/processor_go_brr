@@ -22,6 +22,7 @@ module Ctrl (
 
   output logic  JumpEqual     , // tells PC if it's a je instruction
                 JumpNotEqual,   // tells PC if it's a jne instruction
+                OffsetEn,       // tells PC if it need to save address w/ offset
                // BranchEn ,
 	              RegWrEn  ,	   // write to reg_file (common)
 	              MemWrEn  ,	   // write to mem (store only)
@@ -29,18 +30,18 @@ module Ctrl (
       	        StoreInst,          // mem write enable
 	              Ack,		   // "done w/ program"
 
+  output logic [1:0] PCRegSelect,   // tells the PC which reg to use for saving/jumping address
+                     // 00 -> no jump/save
+                     // 01 -> jump/save with PCreg1
+                     // 10 -> jump/save with PCreg2
+                     // 11 -> jump/save with PCreg3
+
   output logic [2:0] WriteSource,   // tells top_level what data to route to the reg_file for writing
                     // if is 000 then input is from ALU
                     // if is 001 then input is from data_mem
                     // if is 010 then input is from lLUT
                     // if is 011 then input is from mLUT
                      ALUOp,
-                     PCRegSelect,   // tells the PC which reg to use for saving/jumping address
-                     // 00 -> no jump/save
-                     // 01 -> jump/save with PCreg1
-                     // 10 -> jump/save with PCreg2
-                     // 11 -> jump/save with PCreg3
-
   output logic [3:0] ReadRegAddrA,  // tells reg_file which register to read
                      ReadRegAddrB,
                      WriteRegAddr, // tells reg_file which reg to write to
@@ -51,6 +52,7 @@ always_comb begin
   // default to no jumping
   JumpEqual = '0;
   JumpNotEqual = '0;
+  OffsetEn = 0;
   PCRegSelect = '0;
   // default to non-memory instructions
   MemWrEn = '0;
@@ -126,7 +128,11 @@ always_comb begin
         JumpEqual = 1;
       else 
         JumpNotEqual = 1;
+  end else if (Instruction[8:5] == 4'b1001) begin // spc instruction
+      PCRegSelect = Instruction[4:3];
+      OffsetEn = Instruction[2];
   end
+        
 
   
 end

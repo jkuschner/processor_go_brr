@@ -23,7 +23,7 @@ module ProgCtr #(parameter L=10) (
 			JmpNe,  	// jne (jump if not equal) insn
 			Zero,  		// Zero flag only
 			OffsetEn,	// enable offset mode
-  input[2:0]	PCRegAddr,
+  input[1:0]	PCRegAddr,
   input[7:0]	offset,
 
   //input        [L-1:0] DestAddr,     // jump ... "how high?"
