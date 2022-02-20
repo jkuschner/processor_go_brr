@@ -26,8 +26,8 @@ module Ctrl (
                // BranchEn ,
 	              RegWrEn  ,	   // write to reg_file (common)
 	              MemWrEn  ,	   // write to mem (store only)
-	              LoadInst	,	   // mem or ALU to reg_file ?
-      	        StoreInst,          // mem write enable
+	             // LoadInst	,	   // mem or ALU to reg_file ?
+      	       // StoreInst,          // mem write enable
 	              Ack,		   // "done w/ program"
 
   output logic [1:0] PCRegSelect,   // tells the PC which reg to use for saving/jumping address
@@ -57,8 +57,8 @@ always_comb begin
   PCRegSelect = '0;
   // default to non-memory instructions
   MemWrEn = '0;
-  LoadInst = '0;
-  StoreInst = '0;
+  //LoadInst = '0;
+  //StoreInst = '0;
   RegWrEn = 0;
   // default to ALU input
   WriteSource = '0;
@@ -143,6 +143,16 @@ always_comb begin
         WriteSource = 3'b011; // tells regfile to read from LUT_MSW
         ReadRegAddrB = Instruction[4:2];
       end
+  end else if (Instruction[8:4] == 5'b01000) begin // load instruction
+    RegWrEn = 1;
+    WriteRegAddr = {0'b0, Instruction[3:1]};
+    ReadRegAddrA = 4'b1000; //memory addr stored in r8
+    WriteSource = 3'b001; //write to reg_file from datamem
+  end else if (Instruction[8:4] == 5'b01001) begin // store instruction
+    RegWrEn = 0;
+    MemWrEn = 1;
+    ReadRegAddrA = 4'b1000; //memory addr stored in r8
+    ReadRegAddrB = {0'b0, Instruction[3:1]}; // reg addr that holds data to be stored
   end
 
   
