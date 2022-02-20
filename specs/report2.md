@@ -46,6 +46,7 @@
 13. Lookup Table            `lut [input_reg] [1 or 2]`
 14. Counter clear           `ctc [a | b | c | b_flag]`
 15. Counter increment       `cti [a | b | c | b_flag]`
+   1. Make sure to `r8` contains a decimal 1 before using this instruction.
 16. Counter store           `cts [a | b | c | b_flag]`
 17. B_flag condition set    `cbf` // sets the zero/
 18. single substring         `sbs [dest_reg]`
