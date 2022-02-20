@@ -179,6 +179,13 @@ always_comb begin
     MemWrEn = 1;
     ReadRegAddrA = {2'b11, Instruction[2:1]} + 1'b1; // r13-15 hold mem addresses
     ReadRegAddrB = {2'b10, Instruction[2:1]} + 1'b1; // r9-11 hold counter data
+  end else if (Instruction[8:3] == 6'b101111) begin // cbf instruction
+    // adds b_flag to 0. If bflag is 0, then zero flag is set. Otherwise zero flag is unset.
+    RegWrEn = 0;
+    ReadRegAddrA = 4'b1100; // r12 holds b_flag
+    ReadRegAddrB = 4'b0000;
+    ALUOp = kADD;
+  end
 end
 /*
 assign MemWrEn = Instruction[8:6]==3'b110;	 //111  110
