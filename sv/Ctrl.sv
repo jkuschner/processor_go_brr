@@ -162,13 +162,23 @@ always_comb begin
     ALUOp = kADD;
   end else if (Instruction[8:3] == 6'b101100) begin // ctc instruction
     RegWrEn = 1;
-    WriteRegAddr = 4'b1001; // r9 holds a counter
+    WriteRegAddr = {2'b10, Instruction[2:1]} + 1'b1; // r9-12 are counter reg
     ReadRegAddrA = 4'b0000;
     ReadRegAddrB = 4'b0000; // essentially doing an add of 0+0 into r9
     WriteSource = 3'b000;
     ALUOp = kADD;
-  end
-  
+  end else if (Instruction[8:3] == 6'b101101) begin // cti instruction
+    RegWrEn = 1;
+    WriteRegAddr = {2'b10, Instruction[2:1]} + 1'b1;
+    ReadRegAddrA = 4'b1000; //assumes r8 has 1
+    ReadRegAddrB = {2'b10, Instruction[2:1]} + 1'b1;
+    WriteSource = 3'b000;
+    ALUOp = kADD;
+  end else if (Instruction[8:3] == 6'b101110) begin // cts instruction
+    RegWrEn = 0;
+    MemWrEn = 1;
+    ReadRegAddrA = {2'b11, Instruction[2:1]} + 1'b1; // r13-15 hold mem addresses
+    ReadRegAddrB = {2'b10, Instruction[2:1]} + 1'b1; // r9-11 hold counter data
 end
 /*
 assign MemWrEn = Instruction[8:6]==3'b110;	 //111  110

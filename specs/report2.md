@@ -93,6 +93,9 @@
 - r10 holds b counter
 - r11 holds c counter
 - r12 holds b_flag
+- r13 holds 192 (mem addr for storing a count)
+- r14 holds 193 (mem addr for storing b count)
+- r15 holds 194 (mem addr for storing c count)
 
 ### Branches
 - Two jump instructions, for equal and unequal comparison, are supported.
