@@ -146,18 +146,25 @@ always_comb begin
   end else if (Instruction[8:4] == 5'b01000) begin // load instruction
     RegWrEn = 1;
     WriteRegAddr = {1'b0, Instruction[3:1]};
-    ReadRegAddrA = 4'b1000; //memory addr stored in r8
+    ReadRegAddrA = 4'b0001; //memory addr stored in r1
     WriteSource = 3'b001; //write to reg_file from datamem
   end else if (Instruction[8:4] == 5'b01001) begin // store instruction
     RegWrEn = 0;
     MemWrEn = 1;
-    ReadRegAddrA = 4'b1000; //memory addr stored in r8
+    ReadRegAddrA = 4'b0001; //memory addr stored in r1
     ReadRegAddrB = {1'b0, Instruction[3:1]}; // reg addr that holds data to be stored
   end else if (Instruction[8:5] == 4'b1100) begin // cpy instruction
     RegWrEn = 1; 
     WriteRegAddr = {1'b0, Instruction[4:2]};
     ReadRegAddrA = 4'b1000; // adding r8 + 0
     ReadRegAddrB = 4'b0000; // r0 always contains 0
+    WriteSource = 3'b000;
+    ALUOp = kADD;
+  end else if (Instruction[8:3] == 6'b101100) begin // ctc instruction
+    RegWrEn = 1;
+    WriteRegAddr = 4'b1001; // r9 holds a counter
+    ReadRegAddrA = 4'b0000;
+    ReadRegAddrB = 4'b0000; // essentially doing an add of 0+0 into r9
     WriteSource = 3'b000;
     ALUOp = kADD;
   end
