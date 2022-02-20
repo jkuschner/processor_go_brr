@@ -85,6 +85,14 @@
 
 ### Internal Operands
 - 16 registers are supported: 8 are for general purpose, 8 for dedicated usage (e.g. program counters)
+- r0 is dedicated 0 register
+- r1 is dedicated for to hold addresses for memory ops
+- r2-r7 are general purpose
+- r8 is accumulator used for several instructions
+- r9 holds a counter
+- r10 holds b counter
+- r11 holds c counter
+- r12 holds b_flag
 
 ### Branches
 - Two jump instructions, for equal and unequal comparison, are supported.
