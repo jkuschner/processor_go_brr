@@ -19,6 +19,8 @@ ALUOp(to ALU): Tells the ALU which op it is doing on its input data.
 */
 module Ctrl (
   input[ 8:0] Instruction,	   // machine code (comes from the Instruction ROM)
+  input[1:0]  SubstringIndex,  // lower 2-bits of r3(combinationally comes from reg_file)
+                               // indicates position of substring to determine ALUOp for sbs and dbs instructions
 
   output logic  JumpEqual     , // tells PC if it's a je instruction
                 JumpNotEqual,   // tells PC if it's a jne instruction
@@ -185,6 +187,29 @@ always_comb begin
     ReadRegAddrA = 4'b1100; // r12 holds b_flag
     ReadRegAddrB = 4'b0000;
     ALUOp = kADD;
+  end else if (Instruction[8:4] == 5'b01010) begin // sbs instruction
+    RegWrEn = 1;
+    WriteRegAddr = {1'b0, Instruction[3:1]};
+    ReadRegAddrA = 4'b0101; // takes substring from r5
+    WriteSource = 3'b000;
+    case(SubstringIndex)
+      0 : ALUOp = kSB1;
+      1 : ALUOp = kSB2;
+      2 : ALUOp = kSB3;
+      3 : ALUOp = kSB4;
+    endcase
+  end else if (Instruction[8:4] == 5'b01011) begin // dbs instruction
+    RegWrEn = 1;
+    WriteRegAddr = {1'b0, Instruction[3:1]};
+    ReadRegAddrA = 4'b0101; // takes part of substr from r5
+    ReadRegAddrB = 4'b0110; // takes other part from r6
+    WriteSource = 3'b000;
+    case(SubstringIndex)
+      0 : ALUOp = kDB1;
+      1 : ALUOp = kDB2;
+      2 : ALUOp = kDB3;
+      3 : ALUOp = kDB4;
+    endcase
   end
 end
 /*

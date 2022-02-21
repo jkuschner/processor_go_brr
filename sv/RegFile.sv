@@ -17,7 +17,8 @@ module RegFile #(parameter W=8, A=4)(		 // W = data path width (leave at 8); A =
                        Waddr,
   input        [W-1:0] DataIn,
   output logic [W-1:0] DataOutA,			 
-  output logic [W-1:0] DataOutB				 
+  output logic [W-1:0] DataOutB,				 
+  output logic [1:0]   Reg3IndexOut // sends lower 2 bits of r3 back to decoder
     );
 
 // W bits wide [W-1:0] and 2**4 registers deep 	 
@@ -26,7 +27,8 @@ logic [W-1:0] Registers[2**A];	             // or just registers[16] if we know 
 // combinational reads 
 always_comb begin
     DataOutA = Registers[RaddrA];	 
-    DataOutB = Registers[RaddrB];    
+    DataOutB = Registers[RaddrB];   
+    Reg3IndexOut = Registers[4'b0011][1:0]; 
 end
 
 // sequential (clocked) writes 

@@ -42,6 +42,14 @@ module ALU #(parameter W=8, Ops=3)(
       RXR : Out = ^InputA;                // reduction XOR
       SUB : Out = InputA + (~InputB) + 1; // sub
       ORR : Out = InputA | InputB;        // bitwise OR
+      SB1 : Out = {InputA[4:0], 3'b000};  // write 5-bit substring into top 5 bits of output
+      SB2 : Out = {InputA[5:1], 3'b000};
+      SB3 : Out = {InputA[6:2], 3'b000};
+      SB4 : Out = {InputA[7:3], 3'b000};
+      DB1 : Out = {InputB[0], InputA[7:4], 3'b000};
+      DB2 : Out = {InputB[1:0], InputA[7:5], 3'b000};
+      DB3 : Out = {InputB[2:0], InputA[7:6], 3'b000};
+      DB4 : Out = {InputB[3:0], InputA[7], 3'b000};
     endcase
   end
 
