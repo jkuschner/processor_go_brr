@@ -43,23 +43,23 @@ def main():
                 op, args = stuff[0], stuff[1:]
                 argm = []
 
-                if (opcode[op] == '1111'):          # mov imm5
+                if (op == 'mov'):          # mov imm5
                     argm.append('{:05b}'.format(int(args[0][1:])))
 
-                elif (opcode[op] == '101100' or opcode[op] == '101101' or opcode[op] == '101110'):   # ctc, cti, cts
+                elif (op == 'ctc' or op == 'cti' or op == 'cts'):   # ctc, cti, cts
                     rc = '{:02b}'.format(int(args[0].split('r')[1]))
                     argm.append(rc)
 
-                elif (opcode[op] == '10000' or opcode[op] == '10001'): # je, jne
+                elif (op == 'je' or op == 'jne'): # je, jne
                     ch = '{:02b}'.format(int(args[0][1:]))
                     argm.append(ch)
 
-                elif (opcode[op] == '1001'): # spc
+                elif (op == 'spc'): # spc
                     rc = '{:02b}'.format(int(args[0][1:]))
                     off = '{:01b}'.format(int(args[1][1:]))
                     argm.extend((rc, off))
                 
-                elif (opcode[op] == '1010' or opcode[op] == '1110'): # lut
+                elif (op == 'lut' or op == 'add'): # lut, add
                     rc = '{:03b}'.format(int(args[0].split('r')[1]))
                     ch = '{:01b}'.format(int(args[1][1:]))
                     argm.extend((rc, ch))
@@ -67,9 +67,9 @@ def main():
                 else:
                     r1 = '{:03b}'.format(int(args[0].split('r')[1]))
                     r2 = ''
-                    if (opcode[op] == '000' or opcode[op] == '001'): # lsl, lsr
+                    if (op == 'lsl' or op == 'lsr'): # lsl, lsr
                         r2 = '{:03b}'.format(int(args[1].split('r')[1]))
-                    elif (opcode[op] = '1101'):                      # or
+                    elif (op == 'or'):                      # or
                         r2 = '{:02b}'.format(int(args[1].split('r')[1]))
                     argm.extend((r1, r2))
 
