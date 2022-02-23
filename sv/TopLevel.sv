@@ -95,26 +95,18 @@ MUX5 M5 (
 );
 
 // reg file
-	RegFile #(.W(8),.A(3)) RF1 (			  // A(3) makes this 2**3=8 elements deep
-		.Clk    				  ,
-		.Reset     (Reset),
-		.WriteEn   (RegWrEn)    , 
-		.RaddrA    (Instruction[5:3]),        //concatenate with 0 to give us 4 bits
-		.RaddrB    (Instruction[2:0]), 
-		.Waddr     (Instruction[5:3]), 	      // mux above
-		.DataIn    (RegWriteValue) , 
-		.DataOutA  (ReadA        ) , 
-		.DataOutB  (ReadB		 )
-	);
-/* one pointer, two adjacent read accesses: 
-  (sample optional approach)
-	.raddrA ({Instruction[5:3],1'b0});
-	.raddrB ({Instruction[5:3],1'b1});
-*/
-    assign InA = ReadA;						  // connect RF out to ALU in
-	assign InB = ReadB;	          			  // interject switch/mux if needed/desired
-// controlled by Ctrl1 -- must be high for load from data_mem; otherwise usually low
-	assign RegWriteValue = LoadInst? MemReadValue : ALU_out;  // 2:1 switch into reg_file
+RegFile #(.W(8),.A(4)) RF1 (			  // A(3) makes this 2**3=8 elements deep
+	.Clk	   (Clk			  ) ,
+	.Reset     (Reset		  ) ,
+	.WriteEn   (RegWrEn		  ) , 
+	.RaddrA    (ReadRegAddrA  ) ,
+	.RaddrB    (ReadRegAddrB  ) ,
+	.Waddr     (WriteRegAddr  ) , // mux above
+	.DataIn    (RegWriteValue ) , 
+	.DataOutA  (RegOutA       ) , 
+	.DataOutB  (RegOutB 	  )
+);
+
     ALU ALU1  (
 	  .InputA  (InA),
 	  .InputB  (InB), 
