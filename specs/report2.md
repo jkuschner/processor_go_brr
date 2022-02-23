@@ -14,7 +14,7 @@
 ### Instruction Format:
 1. load                     `ld  [dest_reg]`
    1. Always loads from the address at r1 into `dest_reg`.
-2. store                    `str [source_reg] [dest_addr]`
+2. store                    `str [dest_addr]`
    1. Always stores into the the address at r1 from `dest_reg`.
 3. logical shift left       `lsl [dest_reg] [src_reg]`
    1. Shifts in 0's to destination
