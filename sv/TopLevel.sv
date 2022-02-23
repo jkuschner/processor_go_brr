@@ -37,14 +37,14 @@ logic[15:0] CycleCt;	   	// standalone; NOT PC!
 
 // Fetch stage = Program Counter + Instruction ROM
   ProgCtr PC1 (		       // this is the program counter module
-	.Reset        (Reset   ) ,  // reset to 0
-	.Start        (Start   ) ,  // SystemVerilog shorthand for .grape(grape) is just .grape 
-	.Clk          (Clk     ) ,  //    here, (Clk) is required in Verilog, optional in SystemVerilog
-	.BranchAbs    (Jump    ) ,  // jump enable
-	.BranchRel    (BranchEn) ,  // branch enable
-	.ALU_flag	  (Zero    ) ,  // 
-	.Target       (PCTarg  ) ,  // "where to?" or "how far?" during a jump or branch
-	.ProgCtr      (PgmCtr  )	   // program count = index to instruction memory
+	.Reset        (Reset	   ) ,  // reset to 0
+	.Start        (Start	   ) ,  
+	.Clk          (Clk  	   ) ,  
+	.JmpEq		  (JumpEq	   ) ,
+	.JmpNe		  (JumpNotEqual) ,
+	.Zero	  	  (Zero    	   ) ,  // 
+	.OffsetEn	  (OffsetEn	   ) ,
+	.ProgCtr      (PgmCtr  	   )	   // program count = index to instruction memory
 	);					  
 
 LUT LUT1(.Addr         (TargSel ) ,
