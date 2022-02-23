@@ -83,6 +83,17 @@ Ctrl Ctrl1 (
 	.ImmOut	  	  (ImmOut     )
 );
 
+// 5-input mux that selects RegFile input
+MUX5 M5 (
+	.ALU_m		  (ALU_out	  ) ,
+	.data_mem_m	  (DataMemOut ) ,
+	.LUT_LSW_m	  (bFlip_LSW  ) ,
+	.LUT_MSW_m	  (bFlip_MSW  ) ,
+	.ImmOut_m	  (ImmOut	  ) ,
+	.muxSelect	  (WriteSource) ,
+	.dataOut_m 	  (RegWriteValue)
+);
+
 // reg file
 	RegFile #(.W(8),.A(3)) RF1 (			  // A(3) makes this 2**3=8 elements deep
 		.Clk    				  ,
