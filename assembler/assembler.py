@@ -1,4 +1,5 @@
 
+from platform import machine
 import sys
 import re
 
@@ -33,7 +34,7 @@ def main():
             try:
                 # Skip over blank lines, remove comments
                 line = line.strip()
-                line = line.split('#')[0].strip()  # decide later
+                #line = line.split('#')[0].strip()  # decide later
                 line = line.split('//')[0].strip() 
                 if line == '':
                     continue
@@ -74,11 +75,14 @@ def main():
                     argm.extend((r1, r2))
 
                 # Build the instruction:
-                machine_code = opcode[op] + ''.join(argm)
+                machine_code = opcodes[op] + ''.join(argm)
 
                 # add padding for unused bits
                 if (len(machine_code) < 9):
-	                s = s + ((9-len(machine_code))*'0')
+                    s = ''
+                    s = s + ((9-len(machine_code))*'0')
+                    machine_code = machine_code + s
+
 
                 # Write the machine code
                 mcode.write(machine_code + '\n')
