@@ -25,11 +25,11 @@ wire [ 7:0] RegWriteValue, 	// data in to reg file, 8:1 mux -> RegFile
 			bFlip_MSW,		// LUT_MSW -> 8:1 mux
 			bFlip_LSW,		// LUT_LSW -> 8:1 mux
 			ImmOut;			// Ctrl -> 8:1 mux
-wire [ 2:0] ReadRegAddrA,	// Ctrl -> RegFile
+wire [ 3:0] ReadRegAddrA,	// Ctrl -> RegFile
 			ReadRegAddrB,	// Ctrl -> RegFile
 			WriteRegAddr,	// Ctrl -> RegFile
-			WriteSource;	// Ctrl -> 8:1 mux (only 5 used)
-wire [ 3:0] ALUOp;			// Ctrl -> ALU
+			ALUOp;			// Ctrl -> ALU
+wire [ 2:0] WriteSource,	// Ctrl -> 8:1 mux (only 5 used)
 wire        MemWrite,		// data_memory write enable, Ctrl -> dataMem
 	    	RegWrEn,	   	// reg_file write enable, Ctrl -> RegFile
 	    	Zero,          	// ALU output = 0 flag, ALU -> PC
@@ -41,7 +41,7 @@ ProgCtr PC1 (		       // this is the program counter module
 	.Start        (Start	   ) ,  
 	.Clk          (Clk  	   ) ,  
 	.JmpEq		  (JumpEq	   ) ,
-	.JmpNe		  (JumpNotEqual) ,
+	.JmpNe		  (JumpNotEq   ) ,
 	.Zero	  	  (Zero    	   ) ,  // 
 	.OffsetEn	  (OffsetEn	   ) ,
 	.ProgCtr      (PgmCtr  	   )	   // program count = index to instruction memory
@@ -56,25 +56,32 @@ LUT_MSW LUTM(
 	.pFlip        (RegOutB	   ) ,
     .bFlip        (bFlip_MSW   )
 );
+
 // instruction ROM -- holds the machine code pointed to by program counter
-  InstROM #(.W(9)) IR1(
+InstROM #(.W(9)) IR1(
 	.InstAddress  (PgmCtr     ) , 
 	.InstOut      (Instruction)
-	);
+);
 
 // Decode stage = Control Decoder + Reg_file
 // Control decoder
-  Ctrl Ctrl1 (
+Ctrl Ctrl1 (
+	.SubstringIndex(Reg3IndexOut),
 	.Instruction  (Instruction) ,  // from instr_ROM
-	.Jump         (Jump       ) ,  // to PC to handle jump/branch instructions
-	.BranchEn     (BranchEn   )	,  // to PC
+	.JumpEqual	  (JumpEq     ) ,
+	.JumpNotEqual (JumpNotEq  ) ,
+	.OffsetEn	  (OffsetEn   ) ,
 	.RegWrEn      (RegWrEn    )	,  // register file write enable
 	.MemWrEn      (MemWrite   ) ,  // data memory write enable
-    .LoadInst     (LoadInst   ) ,  // selects memory vs ALU output as data input to reg_file
-    .StoreInst    (StoreInst),
-    .TargSel      (TargSel    ) ,  // index into lookup table 
-    .Ack          (Ack        )	   // "done" flag
-  );
+    .Ack          (Ack        ) ,  // "done" flag
+	.PCRegSelect  (PCRegAddr  ) ,
+	.WriteSource  (WriteSource) ,
+	.ReadRegAddrA (ReadRegAddrA),
+	.ReadRegAddrB (ReadRegAddrB),
+	.WriteRegAddr (WriteRegAddr),
+	.ALUOp		  (ALUOp	  ) ,
+	.ImmOut	  	  (ImmOut     )
+);
 
 // reg file
 	RegFile #(.W(8),.A(3)) RF1 (			  // A(3) makes this 2**3=8 elements deep
