@@ -23,14 +23,11 @@ module Ctrl (
                                // indicates position of substring to determine ALUOp for sbs and dbs instructions
 
   output logic  JumpEqual     , // tells PC if it's a je instruction
-                JumpNotEqual,   // tells PC if it's a jne instruction
-                OffsetEn,       // tells PC if it need to save address w/ offset
-               // BranchEn ,
-	              RegWrEn  ,	   // write to reg_file (common)
-	              MemWrEn  ,	   // write to mem (store only)
-	             // LoadInst	,	   // mem or ALU to reg_file ?
-      	       // StoreInst,          // mem write enable
-	              Ack,		   // "done w/ program"
+                JumpNotEqual  , // tells PC if it's a jne instruction
+                OffsetEn      , // tells PC if it need to save address w/ offset
+	              RegWrEn       ,	// write to reg_file (common)
+	              MemWrEn       ,	// write to mem (store only)
+	              Ack           ,	// "done w/ program"
 
   output logic [1:0] PCRegSelect,   // tells the PC which reg to use for saving/jumping address
                      // 00 -> no jump/save
@@ -44,12 +41,12 @@ module Ctrl (
                     // if is 010 then input is from lLUT
                     // if is 011 then input is from mLUT
                     // if is 100 then input is from ImmOut
-                     ALUOp,
   output logic [3:0] ReadRegAddrA,  // tells reg_file which register to read
                      ReadRegAddrB,
-                     WriteRegAddr, // tells reg_file which reg to write to
+                     WriteRegAddr,  // tells reg_file which reg to write to
+                     ALUOp       ,
   output logic [7:0] ImmOut         // wire to send immidieate data directly to reg file
-  );
+);
 
 always_comb begin
   // default to no jumping
@@ -59,8 +56,6 @@ always_comb begin
   PCRegSelect = '0;
   // default to non-memory instructions
   MemWrEn = '0;
-  //LoadInst = '0;
-  //StoreInst = '0;
   RegWrEn = 0;
   // default to ALU input
   WriteSource = '0;
@@ -212,30 +207,7 @@ always_comb begin
     endcase
   end
 end
-/*
-assign MemWrEn = Instruction[8:6]==3'b110;	 //111  110
-assign StoreInst = Instruction[8:6]==3'b110;  // calls out store specially
 
-assign RegWrEn = Instruction[8:7]!=2'b11;  // !111  !110 
-assign LoadInst = Instruction[8:6] == 3'b011;
-// reserve instruction = 9'b111111111; for Ack
-
-// jump on right shift that generates a zero
-// equiv to simply: assign Jump = Instrucxtion[2:0] == kRSH;
-always_comb
-  if(Instruction[2:0] ==  kRSH)
-    Jump = 1;
-  else
-    Jump = 0;
-
-// branch every time instruction = 9'b?????1111;
-assign BranchEn = &Instruction[3:0];
-
-// route data memory --> reg_file for loads
-//   whenever instruction = 9'b110??????; 
-assign TargSel  = Instruction[3:2];
-
-*/
 assign Ack = &Instruction;
 
 
