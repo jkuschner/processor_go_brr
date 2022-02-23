@@ -36,7 +36,7 @@ wire        MemWrite,		// data_memory write enable, Ctrl -> dataMem
 logic[15:0] CycleCt;	   	// standalone; NOT PC!
 
 // Fetch stage = Program Counter + Instruction ROM
-  ProgCtr PC1 (		       // this is the program counter module
+ProgCtr PC1 (		       // this is the program counter module
 	.Reset        (Reset	   ) ,  // reset to 0
 	.Start        (Start	   ) ,  
 	.Clk          (Clk  	   ) ,  
@@ -45,12 +45,17 @@ logic[15:0] CycleCt;	   	// standalone; NOT PC!
 	.Zero	  	  (Zero    	   ) ,  // 
 	.OffsetEn	  (OffsetEn	   ) ,
 	.ProgCtr      (PgmCtr  	   )	   // program count = index to instruction memory
-	);					  
+);					  
 
-LUT LUT1(.Addr         (TargSel ) ,
-         .Target       (PCTarg  )
-    );
+LUT_LSW LUTL(
+	.pFlip        (RegOutA	   ) ,
+    .bFlip        (bFlip_LSW   )
+);
 
+LUT_MSW LUTM(
+	.pFlip        (RegOutB	   ) ,
+    .bFlip        (bFlip_MSW   )
+);
 // instruction ROM -- holds the machine code pointed to by program counter
   InstROM #(.W(9)) IR1(
 	.InstAddress  (PgmCtr     ) , 
