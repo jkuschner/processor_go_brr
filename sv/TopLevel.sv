@@ -107,14 +107,13 @@ RegFile #(.W(8),.A(4)) RF1 (			  // A(3) makes this 2**3=8 elements deep
 	.DataOutB  (RegOutB 	  )
 );
 
-    ALU ALU1  (
-	  .InputA  (InA),
-	  .InputB  (InB), 
-	  .SC_in   (1'b1),
-	  .OP      (Instruction[8:6]),
-	  .Out     (ALU_out),//regWriteValue),
-	  .Zero		                              // status flag; may have others, if desired
-	  );
+ALU ALU1  (
+	.InputA    (RegOutA		  ) ,
+	.InputB    (RegOutB		  ) , 
+	.OP        (ALUOp		  ) ,
+	.Out       (ALU_out		  ) ,  	//regWriteValue),
+	.Zero	   (Zero		  )	
+);
   
 	DataMem DM1(
 		.DataAddress  (ReadB)    , 
