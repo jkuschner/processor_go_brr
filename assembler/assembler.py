@@ -78,7 +78,7 @@ def main():
                     if (op == 'lsl' or op == 'lsr'): # lsl, lsr
                         r2 = '{:03b}'.format(int(args[1].split('r')[1]))
                     elif (op == 'or'):                      # or
-                        r2 = '{:02b}'.format(int(args[1].split('r')[1]))
+                        r2 = '{:02b}'.format(int(args[1].split('r')[1]))[1:]
                     argm.extend((r1, r2))
 
                 # Build the instruction:
