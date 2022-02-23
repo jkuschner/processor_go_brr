@@ -1,10 +1,9 @@
 
-from platform import machine
 import sys
 import re
 
 # opcodes
-opcodes = {
+opcode = {
 		'ld': '01000',
 		'str': '01001',
 		'lsl': '000',
@@ -27,29 +26,37 @@ opcodes = {
         'cpy': '1100'
 		}
 
+counter_ref = {
+    'a':'00',
+    'b':'01',
+    'c':'10'
+}
 
+
+# python3 assembler.py <assembly file>
 def main():
     with open(sys.argv[1], 'r') as file,  open('machine_code.txt', 'w') as mcode:
         for lineno, line in enumerate(file):
             try:
                 # Skip over blank lines, remove comments
                 line = line.strip()
-                #line = line.split('#')[0].strip()  # decide later
+                line = line.split('# ')[0].strip()  # decide later
                 line = line.split('//')[0].strip() 
                 if line == '':
                     continue
 
                 line = re.sub('[\[\]]','',line)
-                stuff = re.split(' |, ', line)
+                stuff = re.split(r'[\s,]+', line)
                 op, args = stuff[0], stuff[1:]
                 argm = []
 
                 if (op == 'mov'):          # mov imm5
                     argm.append('{:05b}'.format(int(args[0][1:])))
 
-                elif (op == 'ctc' or op == 'cti' or op == 'cts'):   # ctc, cti, cts
-                    rc = '{:02b}'.format(int(args[0].split('r')[1]))
-                    argm.append(rc)
+                elif (op == 'ctc' or op == 'cti' or op == 'cts' or op == 'cbf'):   # ctc, cti, cts, cbf
+                    if (op != 'cbf'):
+                        rc = counter_ref[args[0]]
+                        argm.append(rc)
 
                 elif (op == 'je' or op == 'jne'): # je, jne
                     ch = '{:02b}'.format(int(args[0][1:]))
@@ -75,14 +82,11 @@ def main():
                     argm.extend((r1, r2))
 
                 # Build the instruction:
-                machine_code = opcodes[op] + ''.join(argm)
+                machine_code = opcode[op] + ''.join(argm)
 
                 # add padding for unused bits
                 if (len(machine_code) < 9):
-                    s = ''
-                    s = s + ((9-len(machine_code))*'0')
-                    machine_code = machine_code + s
-
+	                machine_code = machine_code + ((9-len(machine_code))*'0')
 
                 # Write the machine code
                 mcode.write(machine_code + '\n')
