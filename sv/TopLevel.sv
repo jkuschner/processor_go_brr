@@ -44,7 +44,8 @@ ProgCtr PC1 (		       // this is the program counter module
 	.JmpNe		  (JumpNotEq   ) ,
 	.Zero	  	  (Zero    	   ) ,  // 
 	.OffsetEn	  (OffsetEn	   ) ,
-	.ProgCtr      (PgmCtr  	   )	   // program count = index to instruction memory
+	.ProgCtr      (PgmCtr  	   ) ,	   // program count = index to instruction memory
+	.offset		  (RegOutB	   )
 );					  
 
 LUT_LSW LUTL(
@@ -115,14 +116,14 @@ ALU ALU1  (
 	.Zero	   (Zero		  )	
 );
   
-	DataMem DM1(
-		.DataAddress  (ReadB)    , 
-		.WriteEn      (MemWrite), 
-		.DataIn       (ReadA), 
-		.DataOut      (MemReadValue)  , 
-		.Clk 		  		     ,
-		.Reset		  (Reset)
-	);
+DataMem DM1(
+	.Clk 		  (Clk		  ) ,
+	.Reset		  (Reset	  ) ,
+	.WriteEn      (MemWrite	  ) , 
+	.DataAddress  (RegOutA	  ) , 
+	.DataIn       (RegOutB	  ) , 
+	.DataOut      (DataMemOut )
+);
 	
 /* count number of instructions executed
       not part of main design, potentially useful
