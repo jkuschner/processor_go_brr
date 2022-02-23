@@ -72,49 +72,49 @@ always_comb begin
     // data to be shifted is in at reg addr inst[2:0]
     // shift amount read from r8
     RegWrEn = '1;
-    WriteRegAddr = Instruction[5:3];
-    ReadRegAddrA = 3'b100; //r8
-    ReadRegAddrB = Instruction[2:0];
+    WriteRegAddr = {1'b0, Instruction[5:3]};
+    ReadRegAddrA = 4'b1000; //r8
+    ReadRegAddrB = {1'b0, Instruction[2:0]};
     ALUOp = kLSH;
   end else if (Instruction[8:6] == 3'b001) begin // lsr instruction
     // shifts write to reg at addr inst[5:3]
     // data to be shifted is in at reg addr inst[2:0]
     // shift amount read from r8
     RegWrEn = '1;
-    WriteRegAddr = Instruction[5:3];
-    ReadRegAddrA = 3'b100; //r8
-    ReadRegAddrB = Instruction[2:0];
+    WriteRegAddr = {1'b0, Instruction[5:3]};
+    ReadRegAddrA = 4'b1000; //r8
+    ReadRegAddrB = {1'b0, Instruction[2:0]};
     ALUOp = kRSH;
   end else if (Instruction[8:5] == 4'b1101) begin // or instruction
     // or writes to reg at addr inst[4:2]
     // other reg is 1'b1 + inst[1:0]
     RegWrEn = '1;
-    WriteRegAddr = Instruction[4:2];
-    ReadRegAddrA = Instruction[4:2];
-    ReadRegAddrB = {1'b1, Instruction[1:0]};
+    WriteRegAddr = {1'b0, Instruction[4:2]};
+    ReadRegAddrA = {1'b0, Instruction[4:2]};
+    ReadRegAddrB = {2'b01, Instruction[1:0]};
     ALUOp = kORR;
   end else if (Instruction[8:5] == 4'b0110) begin // xor instruction
     // xor write to reg at addr inst[4:2]
     // other reg is r8
     RegWrEn = '1;
-    WriteRegAddr = Instruction[4:2];
-    ReadRegAddrA = Instruction[4:2];
-    ReadRegAddrB = 3'b100; // r8
+    WriteRegAddr = {1'b0, Instruction[4:2]};
+    ReadRegAddrA = {1'b0, Instruction[4:2]};
+    ReadRegAddrB = 4'b1000; // r8
     ALUOp = kXOR;
   end else if (Instruction[8:5] == 4'b0111) begin // rxr instruction
     //rxr writes to reg at addr inst[4:2]
     // reduction xor the data in that register
     RegWrEn = '1;
-    WriteRegAddr = Instruction[4:2];
-    ReadRegAddrA = Instruction[4:2];
+    WriteRegAddr = {1'b0, Instruction[4:2]};
+    ReadRegAddrA = {1'b0, Instruction[4:2]};
     ALUOp = kRXR;
   end else if (Instruction[8:5] == 4'b1110) begin // add instruction
       // writes to reg at addr inst[4:2]
       // other operand comes from r8
       RegWrEn = '1;
-      WriteRegAddr = Instruction[4:2];
-      ReadRegAddrA = Instruction[4:2];
-      ReadRegAddrB = 3'b100; // r8
+      WriteRegAddr = {1'b0, Instruction[4:2]};
+      ReadRegAddrA = {1'b0, Instruction[4:2]};
+      ReadRegAddrB = 4'b1000; // r8
       if (Instruction[1] == 1'b0)
         ALUOp = kADD;
       else 
@@ -123,7 +123,7 @@ always_comb begin
   end else if (Instruction[8:5] == 4'b1111) begin // mov instruction
       // writes inst[4:0] into r8 using ImmOut
       RegWrEn = 1;
-      WriteRegAddr = 3'b100; //write to r8
+      WriteRegAddr = 4'b1000; //write to r8
       WriteSource = 3'b100;
   end else if (Instruction[8:5] == 4'b1000) begin // je and jne instruction
       // set PCRegSelect to Instruction[3:2]
@@ -137,13 +137,13 @@ always_comb begin
       OffsetEn = Instruction[2];
   end else if (Instruction[8:5] == 4'b1010) begin // lut instruction
       RegWrEn = 1;
-      WriteRegAddr = 3'b100; // write to r8
+      WriteRegAddr = 4'b1000; // write to r8
       if (Instruction[1] == 0) begin
         WriteSource = 3'b010; //tells regfile to read from LUT_LSW
-        ReadRegAddrA = Instruction[4:2];
+        ReadRegAddrA = {1'b0, Instruction[4:2]};
       end else begin
         WriteSource = 3'b011; // tells regfile to read from LUT_MSW
-        ReadRegAddrB = Instruction[4:2];
+        ReadRegAddrB = {1'b0, Instruction[4:2]};
       end
   end else if (Instruction[8:4] == 5'b01000) begin // load instruction
     RegWrEn = 1;
