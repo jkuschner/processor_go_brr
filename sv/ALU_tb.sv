@@ -81,6 +81,33 @@ initial begin
  op= 'b111;
  test_alu_func;
  #5;
+ 
+ // TESTING SBS2
+ INPUTA = 'b00001101;
+ op= 'b1001;
+ test_alu_func;
+ #5;
+ 
+ // TESTING DBS3
+ INPUTA = 'b10100001;
+ INPUTB = 'b01101001;
+ op= 'b1110;
+ test_alu_func;
+ #5;
+ 
+ // TESTING SBS1
+ INPUTA = 'b10100001;
+ INPUTB = 'b01011001;
+ op= 'b1000;
+ test_alu_func;
+ #5;
+ 
+ // TESTING DB4
+ INPUTA = 'b10101101;
+ INPUTB = 'b01101011;
+ op= 'b1111;
+ test_alu_func;
+ #5;
  end
   
  task test_alu_func;
@@ -93,12 +120,21 @@ initial begin
   4: expected = INPUTA | INPUTB;      // ORR
   5: expected = INPUTA - INPUTB;      // SUB
   7: expected = ^INPUTA;              // RXR
+  8: expected = {INPUTA[4:0], 3'b000};  // SBS
+  9: expected = {INPUTA[5:1], 3'b000};
+  10: expected = {INPUTA[6:2], 3'b000};
+  11: expected = {INPUTA[7:3], 3'b000};
+  12: expected = {INPUTB[0], INPUTA[7:4], 3'b000}; //DBS
+  13: expected = {INPUTB[1:0], INPUTA[7:5], 3'b000};
+  14: expected = {INPUTB[2:0], INPUTA[7:6], 3'b000};
+  15: expected = {INPUTB[3:0], INPUTA[7], 3'b000};
+  default: expected = 0;
    endcase
    #1; if(expected == OUT)
   begin
-   $display("%t YAY!! inputs = %h %h, opcode = %b, Zero %b",$time, INPUTA,INPUTB,op, Zero);
+   $display(" YAY!! inputs = %h %h, opcode = %b, Zero %b", INPUTA,INPUTB,op, Zero);
   end
-     else begin $display("%t FAIL! inputs = %h %h, opcode = %b, zero %b",$time, INPUTA,INPUTB,op, Zero);end
+     else begin $display(" FAIL! inputs = %h %h, opcode = %b, zero %b", INPUTA,INPUTB,op, Zero);end
 
  end
  endtask
