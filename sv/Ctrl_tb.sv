@@ -18,7 +18,7 @@ bit         JumpEqual, JumpEqual_e;
 bit         JumpNotEqual, JumpNotEqual_e;
 bit         OffsetEn, OffsetEn_e;
 bit         RegWrEn, RegWrEn_e;
-bit         MemWrEn MemWrEn_e;
+bit         MemWrEn, MemWrEn_e;
 bit         Ack, Ack_e;
 
 // CONNECTIONS
@@ -118,7 +118,7 @@ Ack_e = 1'b0;
 test_ctrl;
 
 #5ps;
-Instruction = 9'b1101_010_10 // or data in r2 w/ data in r6 and store in r2
+Instruction = 9'b1101_010_10; // or data in r2 w/ data in r6 and store in r2
 #5ps;
 PCRegSelect_e = 2'b00;
 WriteSource_e = 3'b000;
@@ -251,7 +251,7 @@ Ack_e = 1'b0;
 test_ctrl;
 
 #5ps;
-Instruction = 9'b1001_11_0_0; // store current PC into PCreg3
+Instruction = 9'b1001_11_0_00; // store current PC into PCreg3
 #5ps;
 PCRegSelect_e = 2'b11;
 WriteSource_e = WriteSource;
@@ -270,7 +270,7 @@ Ack_e = 1'b0;
 test_ctrl;
 
 #5ps;
-Instruction = 9'b1001_01_1_0; // store current PC + offset into PCreg1
+Instruction = 9'b1001_01_1_00; // store current PC + offset into PCreg1
 #5ps;
 PCRegSelect_e = 2'b01;
 WriteSource_e = WriteSource;
@@ -368,7 +368,7 @@ test_ctrl;
 Instruction = 9'b101110_10_0; //store data in r11 into address in r15
 #5ps;
 PCRegSelect_e = 2'b00;
-WriteSource_e = WriteSource
+WriteSource_e = WriteSource;
 ReadRegAddrA_e = 4'b1111;
 ReadRegAddrB_e = 4'b1011;
 WriteRegAddr_e = WriteRegAddr;
@@ -387,7 +387,7 @@ test_ctrl;
 Instruction = 9'b101111_000; // adds r12 to r0 w/o storing(just to set zero flag)
 #5ps;
 PCRegSelect_e = 2'b00;
-WriteSource_e = WriteSource
+WriteSource_e = WriteSource;
 ReadRegAddrA_e = 4'b1100;
 ReadRegAddrB_e = 4'b0000;
 WriteRegAddr_e = WriteRegAddr;
@@ -439,7 +439,7 @@ WriteSource_e = 3'b000;
 ReadRegAddrA_e = 4'b0101;
 ReadRegAddrB_e = ReadRegAddrB;
 WriteRegAddr_e = 4'b0010;
-ALUOp_e = '1001;
+ALUOp_e = 4'b1010;
 ImmOut_e = ImmOut;
 JumpEqual_e = 1'b0;
 JumpNotEqual_e = 1'b0;
@@ -459,7 +459,7 @@ WriteSource_e = 3'b000;
 ReadRegAddrA_e = 4'b0101;
 ReadRegAddrB_e = 4'b0110;
 WriteRegAddr_e = 4'b0011;
-ALUOp_e = 'b1110;
+ALUOp_e = 'b1111;
 ImmOut_e = ImmOut;
 JumpEqual_e = 1'b0;
 JumpNotEqual_e = 1'b0;
