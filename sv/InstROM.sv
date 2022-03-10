@@ -394,6 +394,7 @@ module InstROM #(parameter A=10, W=9) (
       334: InstOut ='b110_0_101_00;
       335: InstOut ='b110_0_110_00;
       336: InstOut ='b110_0_111_00;
+      default: InstOut = 0;
 
     endcase
   end
