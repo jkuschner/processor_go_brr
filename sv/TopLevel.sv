@@ -29,10 +29,10 @@ wire [ 3:0] ReadRegAddrA,	// Ctrl -> RegFile
 			ReadRegAddrB,	// Ctrl -> RegFile
 			WriteRegAddr,	// Ctrl -> RegFile
 			ALUOp;			// Ctrl -> ALU
-wire [ 2:0] WriteSource,	// Ctrl -> 8:1 mux (only 5 used)
+wire [ 2:0] WriteSource;	// Ctrl -> 8:1 mux (only 5 used)
 wire        MemWrite,		// data_memory write enable, Ctrl -> dataMem
 	    	RegWrEn,	   	// reg_file write enable, Ctrl -> RegFile
-	    	Zero,          	// ALU output = 0 flag, ALU -> PC
+	    	Zero;          	// ALU output = 0 flag, ALU -> PC
 logic[15:0] CycleCt;	   	// standalone; NOT PC!
 
 // Fetch stage = Program Counter + Instruction ROM

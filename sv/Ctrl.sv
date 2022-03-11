@@ -130,7 +130,7 @@ always_comb begin
   end else if (Instruction[8:5] == 4'b1001) begin // spc instruction
       PCRegSelect = Instruction[4:3];
       OffsetEn = Instruction[2];
-      ReadRegAddrB = 4'b10
+      ReadRegAddrB = 4'b1000;
   end else if (Instruction[8:5] == 4'b1010) begin // lut instruction
       RegWrEn = 1;
       WriteRegAddr = {1'b0, Instruction[4:2]}; // write to specified register
