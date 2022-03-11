@@ -18,15 +18,15 @@ Outputs: Out(goes to reg_file)
 For shift operations, InputA is the data to be shifted, InputB is the shift amount.
 Need to add an RXR ALU op and set signals accordingly.
 */
-module ALU #(parameter W=8, Ops=3)(
+module ALU #(parameter W=8, Ops=4)(
   input        [W-1:0]   InputA,          // data inputs
                          InputB,
   input        [Ops-1:0] OP,		  // ALU opcode, part of microcode
-  input                  SC_in,           // shift or carry in
+  //input                  SC_in,           // shift or carry in
   output logic [W-1:0]   Out,		  // data output 
-  output logic           Zero,            // output = zero flag	 !(Out)
-                         Parity,          // outparity flag  ^(Out)
-                         Odd		  // output odd flag (Out[0])
+  output logic           Zero            // output = zero flag	 !(Out)
+                         //Parity,          // outparity flag  ^(Out)
+                        // Odd		  // output odd flag (Out[0])
 // you may provide additional status flags, if desired
     );								    
 	 

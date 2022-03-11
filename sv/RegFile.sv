@@ -12,7 +12,7 @@ module RegFile #(parameter W=8, A=4)(		 // W = data path width (leave at 8); A =
   input                Clk,
                        Reset,
                        WriteEn,
-  input        [2:0]   RaddrA,				 // address pointers
+  input        [3:0]   RaddrA,				 // address pointers
                        RaddrB,
                        Waddr,
   input        [W-1:0] DataIn,

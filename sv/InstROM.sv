@@ -9,7 +9,7 @@ Output: InstOut(send to Decoder): The machine code instruction located at the gi
 module InstROM #(parameter A=10, W=9) (
   input [A-1:0] InstAddress,
   output logic[W-1:0] InstOut);
-	 
+/*
 // First option - manually populating instructions
   always_comb begin 
 	InstOut = 'b000_000_000;  // default
@@ -398,26 +398,26 @@ module InstROM #(parameter A=10, W=9) (
 
     endcase
   end
-
+*/
 // Uncomment this part if reading from machine_code.txt
 // Second option (usually recommended) alternative expression
 //   need $readmemh or $readmemb to initialize all of the elements
 // declare 2-dimensional array, W bits wide, 2**A words deep
-  /* logic[W-1:0] inst_rom[2**A];
+   logic[W-1:0] inst_rom[2**A];
   always_comb InstOut = inst_rom[InstAddress];
   // Load instruction memory from external file
   initial begin
   	// NOTE: This may not work depending on your simulator
 	// e.g. Questa needs the file in path of the application .exe, it
 	// doesn't care where you project code is
-	//$readmemb("machine_code.txt",inst_rom);
+	$readmemb("//amznfsx7umcv4bw.AD.UCSD.EDU/share/users/jkuschne/Desktop/CSE141L/assembler/program1_machine_code.txt",inst_rom);
 	
 	// So you are probably better off with an absolute path,
 	// but you will have to change this example path when you
 	// try this on your machine most likely:
 	//$readmemb("//vmware-host/Shared Folders/Downloads/basic_proc2/machine_code.txt", inst_rom);
   end 
-  */
+  
 //
   
 endmodule

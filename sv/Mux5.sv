@@ -4,7 +4,7 @@ module MUX5 (
                        LUT_LSW_m,
                        LUT_MSW_m,
                        ImmOut_m,
-    input        [3:0] muxSelect,
+    input        [2:0] muxSelect,
 
     output logic [7:0] dataOut_m
 );

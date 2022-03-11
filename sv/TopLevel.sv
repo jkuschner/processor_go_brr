@@ -44,6 +44,7 @@ ProgCtr PC1 (		       // this is the program counter module
 	.JmpNe		  (JumpNotEq   ) ,
 	.Zero	  	  (Zero    	   ) ,  // 
 	.OffsetEn	  (OffsetEn	   ) ,
+	.PCRegAddr	  (PCRegAddr   ) ,
 	.ProgCtr      (PgmCtr  	   ) ,	   // program count = index to instruction memory
 	.offset		  (RegOutB	   )
 );					  
@@ -105,7 +106,8 @@ RegFile #(.W(8),.A(4)) RF1 (			  // A(3) makes this 2**3=8 elements deep
 	.Waddr     (WriteRegAddr  ) , // mux above
 	.DataIn    (RegWriteValue ) , 
 	.DataOutA  (RegOutA       ) , 
-	.DataOutB  (RegOutB 	  )
+	.DataOutB  (RegOutB 	  ) ,
+	.Reg3IndexOut(Reg3IndexOut)
 );
 
 ALU ALU1  (
