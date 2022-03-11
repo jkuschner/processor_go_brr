@@ -145,16 +145,16 @@ rxr r4              # r4 = 0000_000_p1
 or  r7, r4          # r7 = 0000_p8_p4_p2_p1
 
 # Error correction/detection
-mov #7              # r8 = 7 (other reg for upcoming xor)
+cpy r7              # r8 = r7 (other reg for upcoming xor)
 xor r6              # r6 = flipped parities
 
 # Lookup tables to figure wrong bits
-lut r6, r4, #1      # r4 = bits to flip in MSW
-lut r6, r5, #0      # r5 = bits to flip in LSW
+lut r4, #1      # r4 = bits to flip in MSW
+lut r5, #0      # r5 = bits to flip in LSW
 
-mov #4              # r8 = 4 (other reg for upcoming xor)
+cpy r4              # r8 = r4 (other reg for upcoming xor)
 xor r3              # r3 = possibly corrected MSW
-mov #5              # r8 = 5 (other reg for upcoming xor)
+cpy r5              # r8 = r5 (other reg for upcoming xor)
 xor r2              # r2 = possibly corrected LSW
 
 # Storing into data_mem
@@ -174,6 +174,6 @@ mov #6
 lsl r2, r2          
 mov #30             
 add r2, #0          # r2 = 94 (to set comparison for i)
-mov #1              # r8 = 1 (other reg for upcoming xor)
+cpy r1              # r8 = r1 (other reg for upcoming xor)
 xor r2              # compare i to 94
 jne #1              # If != 94, continue the loop

@@ -133,13 +133,13 @@ always_comb begin
       ReadRegAddrB = 4'b10
   end else if (Instruction[8:5] == 4'b1010) begin // lut instruction
       RegWrEn = 1;
-      WriteRegAddr = 4'b1000; // write to r8
+      WriteRegAddr = {1'b0, Instruction[4:2]}; // write to specified register
       if (Instruction[1] == 0) begin
         WriteSource = 3'b010; //tells regfile to read from LUT_LSW
-        ReadRegAddrA = {1'b0, Instruction[4:2]};
+        ReadRegAddrA = 4'b0110; // always read from r6
       end else begin
         WriteSource = 3'b011; // tells regfile to read from LUT_MSW
-        ReadRegAddrB = {1'b0, Instruction[4:2]};
+        ReadRegAddrB = 4'b0110; // always read from r6
       end
   end else if (Instruction[8:4] == 5'b01000) begin // load instruction
     RegWrEn = 1;

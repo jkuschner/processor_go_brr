@@ -154,6 +154,6 @@ mov #8             // move 8 into r8 (for use in upcoming lsr)
 lsl r3, r3         // clear r3
 mov #30            // mov 30 into r8 (for upcoming add)
 add r3, 0          // set r3 to 30
-mov #3             // r8 = 3 (other register for upcoming xor)
+cpy r3             // r8 = r3 (other register for upcoming xor)
 xor r2             // set flag for loop cond.
 jne #1
