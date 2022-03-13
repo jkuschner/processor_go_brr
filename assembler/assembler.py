@@ -33,9 +33,12 @@ counter_ref = {
 }
 
 
-# python3 assembler.py <assembly file>
+# python3 assembler.py <assembly file> <name of machine code file to write to>
 def main():
-    with open(sys.argv[1], 'r') as file,  open('machine_code.txt', 'w') as mcode:
+    if (len(sys.argv) != 3):
+            print("Incorrect # of args \nUsage: python3 assembler.py <assembly file to read> <mcode file to write to>");
+            sys.exit();
+    with open(sys.argv[1], 'r') as file,  open(sys.argv[2], 'w') as mcode:
         for lineno, line in enumerate(file):
             try:
                 # Skip over blank lines, remove comments
@@ -96,7 +99,7 @@ def main():
                 print(">>>{}<<<".format(line))
                 print()
                 raise
-
+        mcode.write('111111111') # halt
 
 if __name__=="__main__":
     main()
