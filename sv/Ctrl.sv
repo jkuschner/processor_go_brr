@@ -61,6 +61,10 @@ always_comb begin
   WriteSource = '0;
   // ImmOut is only used for mov instruction, so is always the same
   ImmOut = { 3'b000, Instruction[4:0]};
+  WriteRegAddr = 0;
+  ReadRegAddrA = 0;
+  ReadRegAddrB = 0;
+  ALUOp = 0;
 
   if (Instruction[8:6] == 3'b000) begin // lsl instruction
     // shifts write to reg at addr inst[5:3]
