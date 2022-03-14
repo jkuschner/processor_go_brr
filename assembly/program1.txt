@@ -1,10 +1,10 @@
 spc #1, #0         // save PC to PCreg1
 mov #0             // move 0 into r8 (to copy into r1)
 cpy r1             // set r1(i) to 0
-ld  r2, [r1]       // load LSW from data_mem[i]
+ld  r2             // load LSW from data_mem[i]
 mov #1             // mov 1 into r8 (for upcoming add)
 add r1, #0          // add 1 to i
-ld  r3, [r1]       // load MSW from data_mem[i+1]
+ld  r3             // load MSW from data_mem[i+1]
 mov #4             // move 4 into r8 (for use in upcoming lsr)
 lsr r4, r2         // right shift LSW into tLSW
 mov #4             // move 4 into r8 (for use in upcoming lsl)
@@ -145,7 +145,7 @@ lsr r5, r5         // r5 = 0000_0_p2_p1_p16
 or  r4, r5         // r4 = b4:b2_p4_b1_p2_p1_p16
 mov #1             // mov 1 into r8 (for upcoming add)
 add r1, #0          // set i to i + 31
-str r4, [r1]       // store r4 into data_mem[i+31]
+str r4             // store r4 into data_mem[i+31]
 mov #29            // mov 29 into r8 (for upcoming add)
 add r1, 1          // put i back to normal w/ an increment
 mov #0             // move 0 into r8 (for use in upcoming lsl)
