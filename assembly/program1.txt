@@ -3,7 +3,7 @@ mov #0             // move 0 into r8 (to copy into r1)
 cpy r1             // set r1(i) to 0
 ld  r2, [r1]       // load LSW from data_mem[i]
 mov #1             // mov 1 into r8 (for upcoming add)
-add r1, 0          // add 1 to i
+add r1, #0          // add 1 to i
 ld  r3, [r1]       // load MSW from data_mem[i+1]
 mov #4             // move 4 into r8 (for use in upcoming lsr)
 lsr r4, r2         // right shift LSW into tLSW
@@ -120,8 +120,8 @@ mov #4             // move 4 into r8 (for use in upcoming lsr)
 lsr r4, r6         // r4 = 0000_000p8
 or  r5, r4         // r5 = b11:b5_p8
 mov #29            // mov 29 into r8 (for upcoming add)
-add r1, 0          //  set i to correct addr(i+30)
-str r5, [r1]       // store r5 into data_mem[i+30]
+add r1, #0          //  set i to correct addr(i+30)
+str r5             // store r5 into data_mem[i+30]
 mov #1             // move 1 into r8 (for use in upcoming lsr)
 lsr r4, r2         // r4 = 0000_0b4:b2
 mov #5             // move 5 into r8 (for use in upcoming lsl)
@@ -144,7 +144,7 @@ mov #5             // move 5 into r8 (for use in upcoming lsr)
 lsr r5, r5         // r5 = 0000_0_p2_p1_p16
 or  r4, r5         // r4 = b4:b2_p4_b1_p2_p1_p16
 mov #1             // mov 1 into r8 (for upcoming add)
-add r1, 0          // set i to i + 31
+add r1, #0          // set i to i + 31
 str r4, [r1]       // store r4 into data_mem[i+31]
 mov #29            // mov 29 into r8 (for upcoming add)
 add r1, 1          // put i back to normal w/ an increment
@@ -153,7 +153,7 @@ lsl r2, r1         // store i into r2
 mov #8             // move 8 into r8 (for use in upcoming lsr)
 lsl r3, r3         // clear r3
 mov #30            // mov 30 into r8 (for upcoming add)
-add r3, 0          // set r3 to 30
+add r3, #0          // set r3 to 30
 cpy r3             // r8 = r3 (other register for upcoming xor)
 xor r2             // set flag for loop cond.
 jne #1
