@@ -8,7 +8,7 @@ mov #1
 add r1, #0           
 ld  r3              // load data_mem[i+1] into r3 (MSW - b11:b5_p8)
 
-# begin setting up byte to hold our parity bits
+// begin setting up byte to hold our parity bits
 mov #5              // parity register -> r6; parity = p2:p1_p16_0_0000
 lsl r6, r2         
 mov #6               
@@ -26,7 +26,7 @@ mov #4
 lsr r4, r4          
 or  r6, r4          // parity = 0000_p8_p4_p2:p1 
 
-# setting up tLSW
+// setting up tLSW
 mov #4              // tLSW -> r4; tLSW = b1_p2:p1_p16
 lsl r4, r2          
 mov #7
@@ -42,7 +42,7 @@ mov #4
 lsl r5, r5         
 or  r4, r5          // tLSW = b8:b1
 
-# setting up tRSW
+// setting up tRSW
 mov #5
 lsr r5, r3          // r5 = 00000_b11:b9
 
@@ -65,7 +65,7 @@ mov #0
 cpy r7              // 0 out r7(nParity)
 or  r7, r5          // store p8 in nParity reg
 
-# Calculating p4
+// Calculating p4
 mov #4
 lsl r4, r3          // r4 = 0_b11:b9_0000
 mov #7
@@ -83,7 +83,7 @@ mov #2
 lsr r4, r4          // r4 = 0000_0_p4_00
 or  r7, r4          // r7 = 0000_p8_p4_00
 
-# Calculating p2
+// Calculating p2
 mov #2
 lsr r4, r3          // r4 = 0000_00_b11:b10
 mov #5
