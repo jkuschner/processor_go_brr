@@ -11,10 +11,8 @@ import definitions::*;			          // includes package "definitions"
 Inputs: InputA/InputB(from reg file)
         OP(from decoder)
   NOTE: Possibly require another input for register 8? Doesn't seem necessary yet, depends on top level
-
 Outputs: Out(goes to reg_file)
          Zero(goes to Prog_Ctr)
-
 For shift operations, InputA is the data to be shifted, InputB is the shift amount.
 Need to add an RXR ALU op and set signals accordingly.
 */
@@ -50,14 +48,15 @@ module ALU #(parameter W=8, Ops=4)(
       DB2 : Out = {InputB[1:0], InputA[7:5], 3'b000};
       DB3 : Out = {InputB[2:0], InputA[7:6], 3'b000};
       DB4 : Out = {InputB[3:0], InputA[7], 3'b000};
+		default: Out = 0;
     endcase
   end
 
   assign Zero   = !Out;                   // reduction NOR
-  assign Parity = ^Out;                   // reduction XOR
-  assign Odd    = Out[0];		  // odd/even -- just the value of the LSB
+ // assign Parity = ^Out;                   // reduction XOR
+ // assign Odd    = Out[0];		  // odd/even -- just the value of the LSB
 
-  always_comb
-    op_mnemonic = op_mne'(OP);			  // displays operation name in waveform viewer
+  //always_comb
+  //  op_mnemonic = op_mne'(OP);			  // displays operation name in waveform viewer
 
 endmodule
