@@ -47,7 +47,7 @@ mov #5              // r8 = 5 (jump distance)
 spc #3, #1          // skip to line 31 on jump(add r3, #1)
 jne #3
 
-# If pattern found:
+// If pattern found:
 cti b_flag          // set b_flag to 1 
 cti a               // increment act
 cti c               // increment cct
@@ -80,7 +80,7 @@ add r7, #0          // r7 = 159
 cpy r1              // r8 = r1 (other reg for upcoming xor)
 xor r7              // compare i to 159; check if we're on the last element for the outer loop
 
-# If i == 159, don't go into second inner loop + skip
+// If i == 159, don't go into second inner loop + skip
 mov #10             // r8 = 10 (jump distance)
 spc #3, #1          // skip to (add r3, #1)
 je  #3
@@ -91,12 +91,12 @@ dbs r4              // r4 = LSW[j:] + MSW[:j+5]
 cpy r2              // r8 = r2 (other reg for upcoming xor)
 xor r4              // compare r4 and pattern
 
-# If pattern not found, prepare jump: 
+// If pattern not found, prepare jump: 
 mov #3              // r8 = 3 (jump distance)
 spc #3, #1          // skip to (add r3, #1)
 jne #3
 
-# If pattern found:
+// If pattern found:
 cti c               // increment cct
 mov #1
 
