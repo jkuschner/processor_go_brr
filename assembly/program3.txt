@@ -13,7 +13,7 @@ mov #3
 lsl r1, r1          // set r1 to 128 (i)
 spc #1, #0          // start of outer loop
 
-# Outer loop: moving across data_mem[128] to [160]
+// Outer loop: moving across data_mem[128] to [160]
 ctc b_flag          // clear b_flag reg
 ld  r5              // load data_mem[i] into r5(LSW)
 mov #19
@@ -28,7 +28,7 @@ mov #4
 spc #3, #1          // skip to line 21 on jump(mov r3, #0)
 je  #3
 
-# if i != 159
+// if i != 159
 mov #1              // mov 1 into r8 (for upcoming add)
 add r1, #0          // i = i+1
 ld  r6              // load data_mem[i+1] into r6(MSW)
@@ -42,7 +42,7 @@ sbs r4              // r4 = LSW[j:j+5]_000; getting five bits
 cpy r2              // r8 = r2 (other register for upcoming xor)
 xor r4              // compare r4 and pattern
 
-# If pattern not found, prepare jump:
+// If pattern not found, prepare jump:
 mov #5              // r8 = 5 (jump distance)
 spc #3, #1          // skip to line 31 on jump(add r3, #1)
 jne #3
