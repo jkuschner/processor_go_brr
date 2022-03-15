@@ -72,8 +72,8 @@ always_comb begin
     // shift amount read from r8
     RegWrEn = '1;
     WriteRegAddr = {1'b0, Instruction[5:3]};
-    ReadRegAddrA = 4'b1000; //r8
-    ReadRegAddrB = {1'b0, Instruction[2:0]};
+    ReadRegAddrB = 4'b1000; //r8
+    ReadRegAddrA = {1'b0, Instruction[2:0]};
     ALUOp = kLSH;
   end else if (Instruction[8:6] == 3'b001) begin // lsr instruction
     // shifts write to reg at addr inst[5:3]
@@ -81,8 +81,8 @@ always_comb begin
     // shift amount read from r8
     RegWrEn = '1;
     WriteRegAddr = {1'b0, Instruction[5:3]};
-    ReadRegAddrA = 4'b1000; //r8
-    ReadRegAddrB = {1'b0, Instruction[2:0]};
+    ReadRegAddrB = 4'b1000; //r8
+    ReadRegAddrA = {1'b0, Instruction[2:0]};
     ALUOp = kRSH;
   end else if (Instruction[8:5] == 4'b1101) begin // or instruction
     // or writes to reg at addr inst[4:2]
