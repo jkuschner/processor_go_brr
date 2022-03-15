@@ -15,7 +15,6 @@ wire [ 9:0] PgmCtr;        	// PC -> Inst_ROM
 wire [ 1:0] PCRegAddr;		// decoder -> PC
 wire 		JumpEq,			// decoder -> PC
 			JumpNotEq,		// decoder -> PC
-			SetFlags,		// decoder -> PC
 			OffsetEn;		// decoder -> PC
 wire [ 8:0] Instruction;   	// our 9-bit opcode, Inst_ROM -> Ctrl
 wire [ 7:0] RegOutA, 		// RegFile -> ALU, DataMem, LUT_LSW
@@ -48,7 +47,6 @@ ProgCtr PC1 (		       // this is the program counter module
 	.OffsetEn	  (OffsetEn	   ) ,
 	.PCRegAddr	  (PCRegAddr   ) ,
 	.ProgCtr      (PgmCtr  	   ) ,	   // program count = index to instruction memory
-	.SetFlags	  (SetFlags    ) ,
 	.offset		  (RegOutB	   )
 );					  
 
@@ -85,8 +83,7 @@ Ctrl Ctrl1 (
 	.ReadRegAddrB (ReadRegAddrB),
 	.WriteRegAddr (WriteRegAddr),
 	.ALUOp		  (ALUOp	  ) ,
-	.ImmOut	  	  (ImmOut     ) ,
-	.SetFlags	  (SetFlags	  )
+	.ImmOut	  	  (ImmOut     ) 
 );
 
 // 5-input mux that selects RegFile input
