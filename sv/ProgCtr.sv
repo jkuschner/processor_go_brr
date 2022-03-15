@@ -31,6 +31,8 @@ module ProgCtr #(parameter L=10) (
   );
 
   logic [9:0] PCRegisters[3];
+  logic currZero; 
+  logic prevZero;
 
   /*
   always_comb begin
@@ -53,15 +55,18 @@ module ProgCtr #(parameter L=10) (
 	end  
   end
   */
-	 
+ always_comb begin
+  currZero = Zero;
+end
   // program counter can clear to 0, increment, or jump
   always_ff @(posedge Clk) begin           // or just always; always_ff is a linting construct
-	  if(Reset || Start)
+	
+      if(Reset || Start)
 	  ProgCtr <= 0;				   
-	else if(JmpEq && !Zero) begin	           // check if je and zero are set
+	else if(JmpEq && prevZero) begin	           // check if je and zero are set
 	  ProgCtr <= PCRegisters[PCRegAddr - 1];
 	end
-	else if (JmpNe && Zero) begin		 // if jne is set + zero is not set		
+	else if (JmpNe && !prevZero) begin		 // if jne is set + zero is not set		
 	  ProgCtr <= PCRegisters[PCRegAddr - 1];
 	end
 	else
@@ -84,6 +89,6 @@ module ProgCtr #(parameter L=10) (
 			PCRegisters[2] <= ProgCtr;
 	  end
 	end  
-  end
-
+	prevZero <= currZero; 
+end
 endmodule
