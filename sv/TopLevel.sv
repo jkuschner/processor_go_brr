@@ -95,7 +95,6 @@ MUX5 M5 (
 	.LUT_MSW_m	  (bFlip_MSW  ) ,
 	.ImmOut_m	  (ImmOut	  ) ,
 	.muxSelect	  (WriteSource) ,
-	.SetFlags	  (SetFlags   ) ,
 	.dataOut_m 	  (RegWriteValue)
 );
 
@@ -118,7 +117,8 @@ ALU ALU1  (
 	.InputB    (RegOutB		  ) , 
 	.OP        (ALUOp		  ) ,
 	.Out       (ALU_out		  ) ,  	//regWriteValue),
-	.Zero	   (Zero		  )	
+	.Zero	   (Zero		  ),
+		.SetFlags	  (SetFlags   ) 
 );
   
 DataMem DM1(
