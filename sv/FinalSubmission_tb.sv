@@ -44,7 +44,7 @@ initial begin
   // Load the "golden image" data memory once at the beginning
   // Did you choose the 11-bit or 16-bit interpretation for Program 2?
   //$readmemh("data_mem_01-golden-P2_11.hex", DataMemoryAtFinish);
-  $readmemh("//amznfsx7umcv4bw.AD.UCSD.EDU/share/users/jkuschne/Desktop/CSE141L/data_mems/data_mem_01-golden-P2_16.hex", DataMemoryAtFinish);
+  $readmemh("data_mem_01-golden-P2_16.hex", DataMemoryAtFinish);
 
   // De-assert Reset, Assert Start to "load" P1 as-needed
   #10 Reset = 'b0;
@@ -54,6 +54,9 @@ initial begin
   // You can do this here, or it may be easier to simply have loaded all
   // of data memory in the DataMem module during reset (this is the default
   // choice of the sample processors we gave).
+  $readmemh("data_mem_01-initial.hex",DUT.DM1.Core);
+  $readmemb("program1_machine_code.txt",DUT.IR1.inst_rom);
+
 
   // launch program in DUT
   $display("*** P1 Start");
@@ -83,6 +86,8 @@ initial begin
   // You can do this here, or it may be easier to simply have loaded all
   // of data memory in the DataMem module during reset (this is the default
   // choice of the sample processors we gave).
+  $readmemb("program2_machine_code.txt",DUT.IR1.inst_rom);
+
 
   // launch program in DUT
   #10 Start = 0;
@@ -111,6 +116,8 @@ initial begin
   // You can do this here, or it may be easier to simply have loaded all
   // of data memory in the DataMem module during reset (this is the default
   // choice of the sample processors we gave).
+  $readmemb("program3_machine_code.txt",DUT.IR1.inst_rom);
+
 
   // launch program in DUT
   #10 Start = 0;
