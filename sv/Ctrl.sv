@@ -27,6 +27,7 @@ module Ctrl (
                 OffsetEn      , // tells PC if it need to save address w/ offset
 	              RegWrEn       ,	// write to reg_file (common)
 	              MemWrEn       ,	// write to mem (store only)
+                SetFlags      , // tells ALU whether it should set flags or not
 	              Ack           ,	// "done w/ program"
 
   output logic [1:0] PCRegSelect,   // tells the PC which reg to use for saving/jumping address
@@ -59,6 +60,8 @@ always_comb begin
   RegWrEn = 0;
   // default to ALU input
   WriteSource = '0;
+  // default to ALU operation
+  SetFlags = 1;
   // ImmOut is only used for mov instruction, so is always the same
   ImmOut = { 3'b000, Instruction[4:0]};
   WriteRegAddr = 0;
@@ -121,21 +124,25 @@ always_comb begin
         ALUOp = kSUB;
   end else if (Instruction[8:5] == 4'b1111) begin // mov instruction
       // writes inst[4:0] into r8 using ImmOut
+      SetFlags = 0;
       RegWrEn = 1;
       WriteRegAddr = 4'b1000; //write to r8
       WriteSource = 3'b100;
   end else if (Instruction[8:5] == 4'b1000) begin // je and jne instruction
       // set PCRegSelect to Instruction[3:2]
+      SetFlags = 0;
       PCRegSelect = Instruction[3:2];
       if(Instruction[4] == 0)
         JumpEqual = 1;
       else 
         JumpNotEqual = 1;
   end else if (Instruction[8:5] == 4'b1001) begin // spc instruction
+      SetFlags = 0;
       PCRegSelect = Instruction[4:3];
       OffsetEn = Instruction[2];
       ReadRegAddrB = 4'b1000;
   end else if (Instruction[8:5] == 4'b1010) begin // lut instruction
+      SetFlags = 0;
       RegWrEn = 1;
       WriteRegAddr = {1'b0, Instruction[4:2]}; // write to specified register
       if (Instruction[1] == 0) begin
@@ -146,11 +153,13 @@ always_comb begin
         ReadRegAddrB = 4'b0110; // always read from r6
       end
   end else if (Instruction[8:4] == 5'b01000) begin // load instruction
+      SetFlags = 0;
     RegWrEn = 1;
     WriteRegAddr = {1'b0, Instruction[3:1]};
     ReadRegAddrA = 4'b0001; //memory addr stored in r1
     WriteSource = 3'b001; //write to reg_file from datamem
   end else if (Instruction[8:4] == 5'b01001) begin // store instruction
+      SetFlags = 0;
     RegWrEn = 0;
     MemWrEn = 1;
     ReadRegAddrA = 4'b0001; //memory addr stored in r1
@@ -177,6 +186,7 @@ always_comb begin
     WriteSource = 3'b000;
     ALUOp = kADD;
   end else if (Instruction[8:3] == 6'b101110) begin // cts instruction
+      SetFlags = 0;
     RegWrEn = 0;
     MemWrEn = 1;
     ReadRegAddrA = {2'b11, Instruction[2:1]} + 1'b1; // r13-15 hold mem addresses

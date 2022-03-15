@@ -21,6 +21,7 @@ module ALU #(parameter W=8, Ops=4)(
                          InputB,
   input        [Ops-1:0] OP,		  // ALU opcode, part of microcode
   //input                  SC_in,           // shift or carry in
+  input                  SetFlags,
   output logic [W-1:0]   Out,		  // data output 
   output logic           Zero            // output = zero flag	 !(Out)
                          //Parity,          // outparity flag  ^(Out)
@@ -50,9 +51,11 @@ module ALU #(parameter W=8, Ops=4)(
       DB4 : Out = {InputB[3:0], InputA[7], 3'b000};
 		default: Out = 0;
     endcase
+
+    if (SetFlags)
+      Zero = !Out;
   end
 
-  assign Zero   = !Out;                   // reduction NOR
  // assign Parity = ^Out;                   // reduction XOR
  // assign Odd    = Out[0];		  // odd/even -- just the value of the LSB
 
