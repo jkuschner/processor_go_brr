@@ -29,7 +29,6 @@ module ALU #(parameter W=8, Ops=4)(
     );								    
 	 
   op_mne op_mnemonic;			          // type enum: used for convenient waveform viewing
-	
   always_comb begin
     Out = 0;                              // No Op = default
     case(OP)							  
@@ -49,10 +48,9 @@ module ALU #(parameter W=8, Ops=4)(
       DB3 : Out = {InputB[2:0], InputA[7:6], 3'b000};
       DB4 : Out = {InputB[3:0], InputA[7], 3'b000};
 		default: Out = 0;
-    endcase
+    endcase  
   end
-
-  assign Zero   = !Out;                   // reduction NOR
+  assign Zero = !Out;
  // assign Parity = ^Out;                   // reduction XOR
  // assign Odd    = Out[0];		  // odd/even -- just the value of the LSB
 
