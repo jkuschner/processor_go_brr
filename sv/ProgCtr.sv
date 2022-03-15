@@ -32,6 +32,7 @@ module ProgCtr #(parameter L=10) (
 
   logic [9:0] PCRegisters[3];
 
+  /*
   always_comb begin
 	if (!(JmpEq || JmpNe)) begin
 	  if (OffsetEn) begin
@@ -51,9 +52,10 @@ module ProgCtr #(parameter L=10) (
 	  end
 	end  
   end
+  */
 	 
   // program counter can clear to 0, increment, or jump
-  always_ff @(posedge Clk)	           // or just always; always_ff is a linting construct
+  always_ff @(posedge Clk) begin           // or just always; always_ff is a linting construct
 	  if(Reset || Start)
 	  ProgCtr <= 0;				   
 	else if(JmpEq && !Zero) begin	           // check if je and zero are set
@@ -64,5 +66,24 @@ module ProgCtr #(parameter L=10) (
 	end
 	else
 	  ProgCtr <= ProgCtr+'b1; 	       // default increment
+
+	if (!(JmpEq || JmpNe)) begin
+	  if (OffsetEn) begin
+		if (PCRegAddr == 2'b01)
+			PCRegisters[0] = ProgCtr + offset;
+		else if (PCRegAddr == 2'b10)
+			PCRegisters[1] <= ProgCtr + offset;
+		else if (PCRegAddr == 2'b11)
+			PCRegisters[2] <= ProgCtr + offset;
+	  end else begin
+		if (PCRegAddr == 2'b01)
+			PCRegisters[0] <= ProgCtr;
+		else if (PCRegAddr == 2'b10)
+			PCRegisters[1] <= ProgCtr;
+		else if (PCRegAddr == 2'b11)
+			PCRegisters[2] <= ProgCtr;
+	  end
+	end  
+  end
 
 endmodule
