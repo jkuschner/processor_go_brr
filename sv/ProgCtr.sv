@@ -52,12 +52,12 @@ module ProgCtr #(parameter L=10) (
 	 
   // program counter can clear to 0, increment, or jump
   always_ff @(posedge Clk)	           // or just always; always_ff is a linting construct
-	if(Reset)
+	  if(Reset || Start)
 	  ProgCtr <= 0;				   
-	else if(JmpEq && Zero) begin	           // check if je and zero are set
+	else if(JmpEq && !Zero) begin	           // check if je and zero are set
 	  ProgCtr <= PCRegisters[PCRegAddr - 1];
 	end
-	else if (JmpNe && !Zero) begin		 // if jne is set + zero is not set		
+	else if (JmpNe && Zero) begin		 // if jne is set + zero is not set		
 	  ProgCtr <= PCRegisters[PCRegAddr - 1];
 	end
 	else
