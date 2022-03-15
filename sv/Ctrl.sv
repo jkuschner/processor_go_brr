@@ -27,7 +27,6 @@ module Ctrl (
                 OffsetEn      , // tells PC if it need to save address w/ offset
 	              RegWrEn       ,	// write to reg_file (common)
 	              MemWrEn       ,	// write to mem (store only)
-                SetFlags      , // tells ALU whether it should set flags or not
 	              Ack           ,	// "done w/ program"
 
   output logic [1:0] PCRegSelect,   // tells the PC which reg to use for saving/jumping address
@@ -60,6 +59,7 @@ always_comb begin
   RegWrEn = 0;
   // default to ALU input
   WriteSource = '0;
+  // default to ALU operation
   // ImmOut is only used for mov instruction, so is always the same
   ImmOut = { 3'b000, Instruction[4:0]};
   WriteRegAddr = 0;
@@ -218,4 +218,3 @@ assign Ack = &Instruction;
 
 
 endmodule
-

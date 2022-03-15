@@ -3,7 +3,6 @@
 // Module Name:    TopLevel 
 // CSE141L
 // partial only										   
-// a new comment
 module TopLevel(		   // you will have the same 3 ports
     input     	Reset,	   // init/reset, active high
 			    Start,     // start next program
@@ -16,7 +15,7 @@ wire [ 1:0] PCRegAddr;		// decoder -> PC
 wire 		JumpEq,			// decoder -> PC
 			JumpNotEq,		// decoder -> PC
 			OffsetEn;		// decoder -> PC
-wire [ 8:0] Instruction;   	// our 9-bit opcode, Inst_ROM -> Ctrl
+wire [ 8:0] Instruction;   	// our 9-bits opcode, Inst_ROM -> Ctrl
 wire [ 7:0] RegOutA, 		// RegFile -> ALU, DataMem, LUT_LSW
 			RegOutB;  		// RegFile -> ALU, DataMem, LUT_MSW, PC
 wire [ 1:0] Reg3IndexOut;	// RegFile -> Ctrl
