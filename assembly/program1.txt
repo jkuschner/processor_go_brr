@@ -150,10 +150,8 @@ mov #28            // mov 29 into r8 (for upcoming add)
 add r1, #1          // put i back to normal w/ an increment(i+1)
 mov #0             // move 0 into r8 (for use in upcoming lsl)
 lsl r2, r1         // store i into r2
-mov #8             // move 8 into r8 (for use in upcoming lsr)
-lsl r3, r3         // clear r3
 mov #30            // mov 30 into r8 (for upcoming add)
-add r3, #0          // set r3 to 30
-cpy r3             // r8 = r3 (other register for upcoming xor)
+cpy r3             // r3 = r8 (end condition for loop, i = 30?)
+mov #3             // r8 = 3 (other register for upcoming xor)
 xor r2             // set flag for loop cond.
 jne #1
