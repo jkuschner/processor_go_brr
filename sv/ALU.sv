@@ -21,7 +21,6 @@ module ALU #(parameter W=8, Ops=4)(
                          InputB,
   input        [Ops-1:0] OP,		  // ALU opcode, part of microcode
   //input                  SC_in,           // shift or carry in
-  input                  SetFlags,
   output logic [W-1:0]   Out,		  // data output 
   output logic           Zero            // output = zero flag	 !(Out)
                          //Parity,          // outparity flag  ^(Out)
@@ -30,7 +29,6 @@ module ALU #(parameter W=8, Ops=4)(
     );								    
 	 
   op_mne op_mnemonic;			          // type enum: used for convenient waveform viewing
-  logic prevZero;
   always_comb begin
     Out = 0;                              // No Op = default
     case(OP)							  
@@ -50,17 +48,9 @@ module ALU #(parameter W=8, Ops=4)(
       DB3 : Out = {InputB[2:0], InputA[7:6], 3'b000};
       DB4 : Out = {InputB[3:0], InputA[7], 3'b000};
 		default: Out = 0;
-    endcase
-
-    if (SetFlags) begin  
-      Zero = !Out;
-	prevZero = !Out
-
-
-  end else Zero = prevZero;
-  
+    endcase  
   end
-
+  assign Zero = !Out;
  // assign Parity = ^Out;                   // reduction XOR
  // assign Odd    = Out[0];		  // odd/even -- just the value of the LSB
 
