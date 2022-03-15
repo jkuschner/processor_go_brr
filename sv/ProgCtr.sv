@@ -22,7 +22,6 @@ module ProgCtr #(parameter L=10) (
 			JmpEq, 		// je (jump if equal) insn
 			JmpNe,  	// jne (jump if not equal) insn
 			Zero,  		// Zero flag only
-			SetFlags,
 			OffsetEn,	// enable offset mode
   input[1:0]	PCRegAddr,
   input[7:0]	offset,
@@ -32,7 +31,8 @@ module ProgCtr #(parameter L=10) (
   );
 
   logic [9:0] PCRegisters[3];
-  logic s_Zero;
+  logic currZero; 
+  logic prevZero;
 
   /*
   always_comb begin
@@ -55,15 +55,18 @@ module ProgCtr #(parameter L=10) (
 	end  
   end
   */
-	 
+ always_comb begin
+  currZero = Zero;
+end
   // program counter can clear to 0, increment, or jump
   always_ff @(posedge Clk) begin           // or just always; always_ff is a linting construct
-	  if(Reset || Start)
+	
+      if(Reset || Start)
 	  ProgCtr <= 0;				   
-	else if(JmpEq && !s_Zero) begin	           // check if je and zero are set
+	else if(JmpEq && prevZero) begin	           // check if je and zero are set
 	  ProgCtr <= PCRegisters[PCRegAddr - 1];
 	end
-	else if (JmpNe && s_Zero) begin		 // if jne is set + zero is not set		
+	else if (JmpNe && !prevZero) begin		 // if jne is set + zero is not set		
 	  ProgCtr <= PCRegisters[PCRegAddr - 1];
 	end
 	else
@@ -86,9 +89,6 @@ module ProgCtr #(parameter L=10) (
 			PCRegisters[2] <= ProgCtr;
 	  end
 	end  
-	 
-	if (SetFlags)
-		s_Zero = Zero;
-  end
-
+	prevZero <= currZero; 
+end
 endmodule
