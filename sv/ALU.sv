@@ -30,7 +30,7 @@ module ALU #(parameter W=8, Ops=4)(
     );								    
 	 
   op_mne op_mnemonic;			          // type enum: used for convenient waveform viewing
-	
+  logic prevZero;
   always_comb begin
     Out = 0;                              // No Op = default
     case(OP)							  
@@ -52,8 +52,13 @@ module ALU #(parameter W=8, Ops=4)(
 		default: Out = 0;
     endcase
 
-    if (SetFlags)
+    if (SetFlags) begin  
       Zero = !Out;
+	prevZero = !Out
+
+
+  end else Zero = prevZero;
+  
   end
 
  // assign Parity = ^Out;                   // reduction XOR
