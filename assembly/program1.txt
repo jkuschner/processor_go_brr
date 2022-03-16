@@ -1,4 +1,5 @@
-spc #1, #0         // save PC to PCreg1
+mov #3
+spc #1, #1         // save PC to PCreg1
 mov #0             // move 0 into r8 (to copy into r1)
 cpy r1             // set r1(i) to 0
 ld  r2             // load LSW from data_mem[i]
@@ -13,8 +14,9 @@ or  r5, r4         // store tLSW in tmp
 rxr r5             // store p8 in r5
 mov #4             // move 4 into r8 (for use in upcoming lsl)
 lsl r5, r5         // put p8 in correct position
+mov #0
+cpy r6
 or  r6, r5         // store p8 in parity reg
-
 mov #4             // move 4 into r8 (for use in upcoming lsl)
 lsl r5, r3         // left shift MSW into tMSW
 mov #7             // move 7 into r8 (for use in upcoming lsr)
@@ -31,7 +33,6 @@ rxr r5             // store p4 in r5
 mov #3             // move 3 into r8 (for use in upcoming lsl)
 lsl r5, r5         // put p4 in correct position
 or  r6, r5         // store p4 in parity reg
-
 mov #1             // move 1 into r8 (for use in upcoming lsr)
 lsr r5, r3         //tMSW = 0000_00_b11:b10
 mov #5             // move 5 into r8 (for use in upcoming lsl)
@@ -51,7 +52,7 @@ mov #5             // move 5 into r8 (for use in upcoming lsr)
 lsr r4, r4         //tLSW = 0000_0_b4:b3_0
 or  r5, r4         //tMSW = 0_b11:b10_b7:b6_b4:b3_0
 mov #7             // move 7 into r8 (for use in upcoming lsr)
-lsr r4, r2         //tLSW = b1_000_0000
+lsl r4, r2         //tLSW = b1_000_0000 --
 mov #7             // move 7 into r8 (for use in upcoming lsr)
 lsr r4, r4         //tLSW = 0000_000b1
 or  r5, r4         //tMSW = 0_b11:b10_b7:b6_b4:b3_b1
@@ -59,7 +60,6 @@ rxr r5             //store p2 in r5
 mov #2             // move 2 into r8 (for use in upcoming lsl)
 lsl r5, r5         //put p2 in correct position
 or  r6, r5         //store p2 in parity reg
-
 mov #2             // move 2 into r8 (for use in upcoming lsr)
 lsr r5, r3         //tMSW = 0000_000b11
 mov #6             // move 6 into r8 (for use in upcoming lsl)
@@ -92,7 +92,6 @@ rxr r5             //save p1 in r5
 mov #1             // move 1 into r8 (for use in upcoming lsr)
 lsl r5, r5         //put p1 in correct position
 or  r6, r5         // store p1 in parity reg
-
 mov #0             // move 0 into r8 (for use in upcoming lsl)
 lsl r4, r2         // copy LSW into r4
 rxr r4             // rxr LSW
@@ -108,7 +107,6 @@ lsl r5, r5         // make room for rxr LSW
 or  r5, r4         // copy rxr LSW into r5
 rxr r5             // put p16 into r5
 or  r6, r5         // store p16 in parity reg
-
 mov #5             // move 5 into r8 (for use in upcoming lsl)
 lsl r5, r3         // r5 = b11:b9_0_0000
 mov #4             // move 4 into r8 (for use in upcoming lsr)
@@ -150,8 +148,6 @@ mov #28            // mov 29 into r8 (for upcoming add)
 add r1, #1          // put i back to normal w/ an increment(i+1)
 mov #0             // move 0 into r8 (for use in upcoming lsl)
 lsl r2, r1         // store i into r2
-mov #30            // mov 30 into r8 (for upcoming add)
-cpy r3             // r3 = r8 (end condition for loop, i = 30?)
-mov #3             // r8 = 3 (other register for upcoming xor)
-xor r2             // set flag for loop cond.
+mov #30            // mov 30 into r8 (for upcoming add)-
+add r2, #1
 jne #1
